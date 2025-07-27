@@ -9,6 +9,10 @@ import { dirname } from 'path';
 import ideaRoutes from './routes/ideas.js';
 import analysisRoutes from './routes/analysis.js';
 import reportRoutes from './routes/reports.js';
+import streamingRoutes from './routes/streamingRoutes.js';
+import copilotRoutes from './routes/copilotRoutes.js';
+import creditRoutes from './routes/creditRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,6 +36,10 @@ app.get('/health', (req, res) => {
 app.use('/api', ideaRoutes);
 app.use('/api', analysisRoutes);
 app.use('/api', reportRoutes);
+app.use('/api', streamingRoutes);
+app.use('/api', copilotRoutes);
+app.use('/api', creditRoutes);
+app.use('/api', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
