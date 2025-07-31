@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
-// Define user type
+// Define user type (this extends Clerk's user data)
 interface User {
   id: string;
   firstName?: string;
@@ -14,7 +15,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (userData: User) => void;
+  login: () => void; // Not needed with Clerk, but kept for interface compatibility
   logout: () => void;
 }
 
@@ -27,38 +28,44 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user: clerkUser, isLoaded: clerkIsLoaded } = useUser();
+  const { signOut } = useClerk();
+  const [localUser, setLocalUser] = useState<User | null>(null);
 
-  // Check for stored user on mount
+  // Convert Clerk user to our User type when it changes
   useEffect(() => {
-    const storedUser = localStorage.getItem('foundriQ_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (clerkUser && clerkIsLoaded) {
+      setLocalUser({
+        id: clerkUser.id,
+        firstName: clerkUser.firstName || undefined,
+        lastName: clerkUser.lastName || undefined,
+        email: clerkUser.primaryEmailAddress?.emailAddress || '',
+        imageUrl: clerkUser.imageUrl || undefined
+      });
+    } else if (clerkIsLoaded) {
+      setLocalUser(null);
     }
-    setIsLoading(false);
-  }, []);
+  }, [clerkUser, clerkIsLoaded]);
 
-  // Login function - in a real app, this would handle authentication with a backend
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('foundriQ_user', JSON.stringify(userData));
+  // Login function - not needed with Clerk but kept for interface compatibility
+  const login = () => {
+    // Clerk handles login via its components
+    console.log('Login is handled by Clerk components');
   };
 
-  // Logout function
+  // Logout function - uses Clerk's signOut
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('foundriQ_user');
+    signOut();
   };
 
   // Context value wrapped in useMemo to prevent unnecessary re-renders
   const value = useMemo(() => ({
-    user,
-    isAuthenticated: !!user,
-    isLoading,
+    user: localUser,
+    isAuthenticated: !!localUser,
+    isLoading: !clerkIsLoaded,
     login,
     logout
-  }), [user, isLoading]);
+  }), [localUser, clerkIsLoaded]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

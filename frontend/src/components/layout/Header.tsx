@@ -2,11 +2,38 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
-import { Sun, Moon, Brain, Lightbulb } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import UserMenu from '../auth/UserMenu';
+import { Sun, Moon, Brain, Lightbulb, LogIn, UserPlus } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  
+  // Helper function to render auth section
+  const renderAuthSection = () => {
+    if (isLoading) {
+      return <div className="h-8 w-8 rounded-full animate-pulse bg-gray-200 dark:bg-gray-700"></div>;
+    }
+    
+    if (isAuthenticated) {
+      return <UserMenu showCredits={true} />;
+    }
+    
+    return (
+      <div className="flex space-x-2">
+        <Link to="/sign-in" className="flex items-center space-x-1 py-2 px-3 text-sm rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200">
+          <LogIn size={16} />
+          <span>Sign In</span>
+        </Link>
+        <Link to="/sign-up" className="flex items-center space-x-1 py-2 px-3 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-200">
+          <UserPlus size={16} />
+          <span>Sign Up</span>
+        </Link>
+      </div>
+    );
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -53,18 +80,20 @@ const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {darkMode ? (
-              <Sun className="h-5 w-5 text-yellow-500" />
-            ) : (
-              <Moon className="h-5 w-5 text-gray-600" />
-            )}
-          </button>
+          {/* Auth Buttons or User Menu */}
+          <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            
+            {/* Auth or User Menu */}
+            {renderAuthSection()}
+          </div>
         </div>
       </div>
     </motion.header>

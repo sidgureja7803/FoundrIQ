@@ -7,13 +7,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaywallModal from './PaywallModal';
 import { useAuth } from '../../hooks/useAuth';
+import { getUserCredits, addCredits } from '../../services/CreditService';
 
-// Demo credit data - would come from API in real app
-const DEMO_USER_CREDITS = {
-  availableCredits: 3,
-  totalCredits: 5,
-  usedCredits: 2
-};
+// Credit requirements are handled through the CreditService now
 
 interface CreditGuardProps {
   children: React.ReactNode;
@@ -33,13 +29,22 @@ const CreditGuard: React.FC<CreditGuardProps> = ({
   // Fetch user credits on component mount
   useEffect(() => {
     const fetchCredits = async () => {
-      // This would be an API call in a real application
-      // For demo purposes, we're using the constant DEMO_USER_CREDITS
       setIsLoading(true);
       try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setAvailableCredits(DEMO_USER_CREDITS.availableCredits);
+        if (!user?.id) {
+          // If no user is logged in, we can't fetch credits
+          return;
+        }
+        
+        // Get user credits from service
+        const credits = getUserCredits(user.id);
+        
+        if (credits) {
+          setAvailableCredits(credits.availableCredits);
+        } else {
+          // New user gets default free credits
+          setAvailableCredits(5); // Default free credits
+        }
       } catch (error) {
         console.error('Failed to fetch user credits', error);
       } finally {
@@ -60,15 +65,15 @@ const CreditGuard: React.FC<CreditGuardProps> = ({
   }, [availableCredits, requiredCredits, isLoading]);
 
   const handleCreditPurchase = async (packageId: string) => {
-    // This would be an API call to process payment in a real application
+    // Process credit purchase
+    if (!user?.id) return;
     
-    // For demo purposes, we'll simulate a successful purchase
     console.log(`Processing purchase for package: ${packageId}`);
     
-    // Simulate API delay
+    // Simulate API delay for payment processing
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Find the package and update available credits
+    // Credit amounts from packages
     const creditPackages = [
       { id: 'basic', credits: 5 },
       { id: 'pro', credits: 15 },
@@ -78,8 +83,13 @@ const CreditGuard: React.FC<CreditGuardProps> = ({
     const selectedPackage = creditPackages.find(pkg => pkg.id === packageId);
     
     if (selectedPackage) {
-      setAvailableCredits(prev => prev + selectedPackage.credits);
-      setShowPaywall(false);
+      // Add credits to user account
+      const updatedCredits = addCredits(user.id, selectedPackage.credits);
+      
+      if (updatedCredits) {
+        setAvailableCredits(updatedCredits.availableCredits);
+        setShowPaywall(false);
+      }
     }
   };
 

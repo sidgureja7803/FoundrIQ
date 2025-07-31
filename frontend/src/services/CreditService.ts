@@ -132,11 +132,11 @@ export const hasEnoughCredits = (userId: string, requiredCredits = 1): boolean =
  */
 export const deductCredits = (
   userId: string, 
-  creditsToDeduct = 1,
   searchData: {
     ideaName: string;
     description: string;
-  }
+  },
+  creditsToDeduct = 1
 ): UserCredits | null => {
   const credits = getUserCredits(userId);
   
@@ -180,9 +180,7 @@ export const deductCredits = (
 export const addCredits = (userId: string, creditsToAdd = 1): UserCredits | null => {
   let credits = getUserCredits(userId);
   
-  if (!credits) {
-    credits = initializeUserCredits(userId);
-  }
+  credits ??= initializeUserCredits(userId);
   
   // Update credits
   const updatedCredits: UserCredits = {

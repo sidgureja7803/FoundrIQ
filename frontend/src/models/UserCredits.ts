@@ -16,13 +16,14 @@ export interface CreditPackage {
 }
 
 export interface UserCredits {
-  id: string;
   userId: string;
   availableCredits: number;
+  totalCreditsReceived: number;
   totalCreditsUsed: number;
   lastPurchaseDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  lastUpdated: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface SearchHistory {

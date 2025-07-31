@@ -32,12 +32,13 @@ const formatDistanceToNow = (date: Date, options?: { addSuffix: boolean }) => {
 
 import { SearchHistory as SearchHistoryType } from '../../models/UserCredits';
 import { useAuth } from '../../hooks/useAuth';
+import { getSearchHistory } from '../../services/CreditService';
 
-// Demo search history - this would come from an API in a real app
-const DEMO_SEARCH_HISTORY: SearchHistoryType[] = [
+// Default search history for demo purposes when no user is logged in or no history exists
+const DEFAULT_SEARCH_HISTORY: SearchHistoryType[] = [
   {
     id: 'search1',
-    userId: 'user1',
+    userId: 'demo',
     ideaName: 'AI-Powered Meal Planning App',
     description: 'App that creates personalized meal plans based on dietary preferences and available ingredients',
     searchDate: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
@@ -47,42 +48,13 @@ const DEMO_SEARCH_HISTORY: SearchHistoryType[] = [
   },
   {
     id: 'search2',
-    userId: 'user1',
+    userId: 'demo',
     ideaName: 'Smart Home Energy Management',
     description: 'System that optimizes home energy usage by learning user patterns and adjusting systems automatically',
     searchDate: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
     credits: 1,
     status: 'completed',
     resultId: 'result2'
-  },
-  {
-    id: 'search3',
-    userId: 'user1',
-    ideaName: 'AR Shopping Assistant',
-    description: 'Augmented reality app that helps shoppers find items in stores and provides product information',
-    searchDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
-    credits: 1,
-    status: 'in-progress'
-  },
-  {
-    id: 'search4',
-    userId: 'user1',
-    ideaName: 'Sustainable Fashion Marketplace',
-    description: 'Platform for buying and selling second-hand clothing with carbon footprint tracking',
-    searchDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
-    credits: 1,
-    status: 'completed',
-    resultId: 'result4'
-  },
-  {
-    id: 'search5',
-    userId: 'user1',
-    ideaName: 'Virtual Reality Therapy',
-    description: 'VR-based platform for mental health therapy sessions and exercises',
-    searchDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 days ago
-    credits: 1,
-    status: 'completed',
-    resultId: 'result5'
   }
 ];
 
@@ -94,13 +66,31 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ maxItems = 5 }) => {
   const { user } = useAuth();
   const [searchHistory, setSearchHistory] = React.useState<SearchHistoryType[]>([]);
 
-  // Simulate fetching search history
+  // Fetch search history using CreditService
   React.useEffect(() => {
-    // This would be an API call in a real application
     const fetchSearchHistory = async () => {
-      // Simulating API delay
-      await new Promise(resolve => setTimeout(resolve, 700));
-      setSearchHistory(DEMO_SEARCH_HISTORY.slice(0, maxItems));
+      setSearchHistory([]); // Clear previous history
+      
+      if (!user?.id) {
+        // If no user is logged in, use default demo history
+        setSearchHistory(DEFAULT_SEARCH_HISTORY.slice(0, maxItems));
+        return;
+      }
+      
+      try {
+        // Get user search history
+        const userHistory = getSearchHistory(user.id, maxItems);
+        
+        // If user has no history, show demo history
+        if (userHistory.length === 0) {
+          setSearchHistory(DEFAULT_SEARCH_HISTORY.slice(0, maxItems));
+        } else {
+          setSearchHistory(userHistory);
+        }
+      } catch (error) {
+        console.error('Failed to fetch search history:', error);
+        setSearchHistory(DEFAULT_SEARCH_HISTORY.slice(0, maxItems));
+      }
     };
 
     fetchSearchHistory();
