@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import DashboardTutorial from '../components/DashboardTutorial';
+import CreditSystem from '../components/user/CreditSystem';
+import SearchHistory from '../components/user/SearchHistory';
 import { motion } from 'framer-motion';
 import { 
   Brain, 
@@ -10,10 +14,37 @@ import {
   BarChart3, 
   Rocket,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  HelpCircle,
+  Info,
+  X
 } from 'lucide-react';
 
 const HomePage: React.FC = () => {
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
+  const { user } = useAuth();
+  
+  // Check if this is the user's first visit after login
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('foundriQ_seen_tutorial');
+    if (!hasSeenTutorial) {
+      // Wait a moment before showing the tutorial
+      const timer = setTimeout(() => {
+        setShowTutorial(true);
+        localStorage.setItem('foundriQ_seen_tutorial', 'true');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+  
+  const handleCloseTutorial = () => {
+    setShowTutorial(false);
+  };
+  
+  const handleDismissBanner = () => {
+    setShowWelcomeBanner(false);
+  };
   const features = [
     {
       icon: <Search className="h-8 w-8" />,
@@ -78,6 +109,57 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Tutorial Modal */}
+      <DashboardTutorial isOpen={showTutorial} onClose={handleCloseTutorial} />
+      
+      {/* Welcome Banner */}
+      {showWelcomeBanner && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white"
+        >
+          <div className="container mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <Info className="h-5 w-5" />
+              <p>
+                Welcome{user?.firstName ? `, ${user.firstName}` : ''}! Get familiar with the platform by taking the{' '}
+                <button 
+                  onClick={() => setShowTutorial(true)}
+                  className="font-medium underline underline-offset-2 hover:text-blue-100 ml-1"
+                >
+                  guided tutorial
+                </button>
+              </p>
+            </div>
+            <button
+              onClick={handleDismissBanner}
+              className="text-white hover:text-blue-100"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+      {/* Dashboard Overview Section with Credits and History */}
+      <section className="bg-gray-50 dark:bg-gray-800/30 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-2">Dashboard Overview</h2>
+            <p className="text-gray-600 dark:text-gray-300">Monitor your idea validations and credit usage</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <div className="md:col-span-1">
+              <CreditSystem />
+            </div>
+            <div className="md:col-span-2">
+              <SearchHistory maxItems={5} />
+            </div>
+          </div>
+        </div>
+      </section>
+      
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -115,8 +197,12 @@ const HomePage: React.FC = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               
-              <button className="inline-flex items-center px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300">
-                Watch Demo
+              <button 
+                onClick={() => setShowTutorial(true)} 
+                className="inline-flex items-center px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300"
+              >
+                <HelpCircle className="mr-2 h-5 w-5" />
+                How It Works
               </button>
             </div>
           </motion.div>
