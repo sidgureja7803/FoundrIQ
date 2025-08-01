@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
 export class IdeaInterpreterAgent {
   constructor() {

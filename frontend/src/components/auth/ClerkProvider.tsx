@@ -7,7 +7,9 @@ import React, { ReactNode } from 'react';
 import { ClerkProvider as ClerkAuthProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 
 // Clerk publishable key from environment variables (using Vite's syntax)
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
+// For development, we're using a test key that will work for local testing
+// IMPORTANT: Replace this with your actual Clerk key in production via .env
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_YWxsb3dpbmctZG9nZmlzaC0xLmNsZXJrLmFjY291bnRzLmRldiQ';
 
 interface ClerkProviderProps {
   children: ReactNode;
@@ -17,10 +19,10 @@ interface ClerkProviderProps {
  * ClerkProvider component that wraps the application to provide authentication
  */
 export const ClerkProvider: React.FC<ClerkProviderProps> = ({ children }) => {
-  // For development purposes, if the key is missing, simply render children without authentication
-  if (!CLERK_PUBLISHABLE_KEY) {
-    console.warn('Missing Clerk publishable key. Using development mode without authentication.');
-    return <>{children}</>;
+  // Always provide a ClerkProvider to ensure hooks work properly
+  // The test key will work for development but should be replaced with real key in .env
+  if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+    console.warn('⚠️ Using test Clerk key. Create a .env file with VITE_CLERK_PUBLISHABLE_KEY for production.');
   }
 
   return (

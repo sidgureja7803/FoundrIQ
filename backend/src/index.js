@@ -13,6 +13,7 @@ import streamingRoutes from './routes/streamingRoutes.js';
 import copilotRoutes from './routes/copilotRoutes.js';
 import creditRoutes from './routes/creditRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import authRoutes from './routes/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -40,6 +41,7 @@ app.use('/api', streamingRoutes);
 app.use('/api', copilotRoutes);
 app.use('/api', creditRoutes);
 app.use('/api', adminRoutes);
+app.use('/api/auth', authRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

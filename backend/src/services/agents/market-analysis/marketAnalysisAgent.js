@@ -3,7 +3,7 @@
  * Specializes in analyzing market trends, size, and growth potential for startup ideas
  */
 
-import { ChatOpenAI } from "langchain-openai";
+import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";

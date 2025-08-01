@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import DashboardTutorial from '../components/DashboardTutorial';
 import CreditSystem from '../components/user/CreditSystem';
 import SearchHistory from '../components/user/SearchHistory';
+import AuthTest from '../components/auth/AuthTest';
 import { motion } from 'framer-motion';
 import { 
   Brain, 
@@ -157,6 +158,13 @@ const HomePage: React.FC = () => {
               <SearchHistory maxItems={5} />
             </div>
           </div>
+          
+          {/* Authentication Test Component - only shown to logged-in users */}
+          {user && (
+            <div className="mt-8">
+              <AuthTest />
+            </div>
+          )}
         </div>
       </section>
       

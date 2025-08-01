@@ -3,7 +3,7 @@
  * Handles context-aware AI assistance requests using CopilotKit
  */
 
-import { ChatOpenAI } from "langchain-openai";
+import { ChatOpenAI } from "@langchain/openai";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 

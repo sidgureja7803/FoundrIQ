@@ -9,7 +9,7 @@
  * 5. Strategic Recommendations Agent
  */
 
-import { ChatOpenAI } from "langchain-openai";
+import { ChatOpenAI } from "@langchain/openai";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { pull } from "@langchain/langgraph/prebuilt";
 import { RunnableLambda, RunnablePassthrough } from "@langchain/core/runnables";
