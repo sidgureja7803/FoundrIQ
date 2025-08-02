@@ -9,12 +9,14 @@ import NewLandingPage from './pages/NewLandingPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ClerkProvider, { AuthenticatedRoute } from './components/auth/ClerkProvider';
+import { AuthProvider } from './hooks/useAuth';
 import CreditGuard from './components/user/CreditGuard';
 
 function App() {
   return (
     <ClerkProvider>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <Header />
         <main className="flex-grow">
           <Routes>
@@ -49,7 +51,8 @@ function App() {
           </Routes>
         </main>
         <Footer />
-      </div>
+        </div>
+      </AuthProvider>
     </ClerkProvider>
   );
 }

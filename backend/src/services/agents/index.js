@@ -2,9 +2,10 @@ import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
 export class IdeaInterpreterAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -63,9 +64,10 @@ Respond with valid JSON only.
 
 export class MarketResearchAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -123,9 +125,10 @@ Format your response as detailed analysis with specific insights and data points
 
 export class TAMSamAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -179,9 +182,10 @@ Format as detailed analysis with specific dollar amounts and reasoning.
 
 export class QlooTasteAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -241,9 +245,10 @@ Respond with insights about how well this idea aligns with current consumer inte
 
 export class CompetitionScanAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -336,9 +341,10 @@ Format as structured analysis with clear competitor profiles.
 
 export class FeasibilityEvaluatorAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -413,9 +419,10 @@ Provide detailed feasibility assessment with specific recommendations.
 
 export class StrategyRecommenderAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
@@ -479,9 +486,10 @@ Format as actionable strategic plan with specific recommendations.
 
 export class ReportGeneratorAgent {
   constructor() {
-    this.model = new GoogleGenerativeAI({
+    this.model = new ChatGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY,
-      model: 'gemini-pro'
+      modelName: 'gemini-pro',
+      maxOutputTokens: 2048
     });
   }
 
