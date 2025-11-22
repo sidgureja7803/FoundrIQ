@@ -4,7 +4,7 @@ import { Brain, Lightbulb, Github, Twitter, Linkedin, Cpu, Zap, Globe, Mail } fr
 
 const Footer: React.FC = () => {
   return (
-    <motion.footer 
+    <motion.footer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="bg-dark-900/50 border-t border-white/10 mt-auto backdrop-blur-sm"
@@ -27,20 +27,20 @@ const Footer: React.FC = () => {
                   FoundrIQ
                 </span>
                 <div className="text-xs text-dark-400 font-medium">
-                  Powered by Cerebras + Llama
+                  Powered by IBM Granite + Tavily
                 </div>
               </div>
             </div>
             <p className="text-dark-300 mb-6 max-w-md leading-relaxed">
-              Transform your startup ideas into comprehensive, data-driven market analyses with AI-powered insights. 
+              Transform your startup ideas into comprehensive, data-driven market analyses with AI-powered insights.
               Validate faster, launch smarter.
             </p>
-            
+
             {/* Tech Stack */}
             <div className="flex items-center space-x-4 mb-6">
               <div className="flex items-center space-x-2 px-3 py-1 rounded-full glass-effect">
                 <Cpu className="h-4 w-4 text-accent-cyan" />
-                <span className="text-xs font-medium text-white">Cerebras</span>
+                <span className="text-xs font-medium text-white">IBM Granite</span>
               </div>
               <div className="flex items-center space-x-2 px-3 py-1 rounded-full glass-effect">
                 <Brain className="h-4 w-4 text-accent-purple" />

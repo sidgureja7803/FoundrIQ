@@ -1,17 +1,21 @@
 # 🚀 FoundrIQ — AI-Powered Startup Validation Platform
 
 > **Validate your startup idea in minutes, not weeks.**  
-> FoundrIQ transforms raw business ideas into comprehensive, data-driven market analyses with actionable insights and strategic recommendations — powered by **Cerebras infrastructure** running **Llama models**.
+> FoundrIQ transforms raw business ideas into comprehensive, data-driven market analyses with actionable insights and strategic recommendations — powered by **IBM Granite AI** and **Tavily search**.
+
+## 🎯 Built for lablab.ai Hackathon
+
+**FoundrIQ** is participating in the [Agentic AI Hackathon with IBM watsonx.orchestrate](https://lablab.ai/event/agentic-ai-hackathon-ibm-watsonx-orchestrate) showcasing enterprise-grade AI agents powered by IBM Granite models for startup validation.
 
 ## 🧩 Overview
 
 **FoundrIQ** helps aspiring founders analyze and validate their startup ideas using an AI-driven, multi-agent system that delivers real-time insights across key business dimensions:
 
-- 📊 **Market Intelligence** — AI-powered market research with real-time data analysis  
-- 🧠 **Competitive Mapping** — Deep competitor analysis and positioning insights  
-- 💰 **Market Sizing (TAM/SAM/SOM)** — Precise market sizing using advanced ML algorithms  
+- 📊 **Market Intelligence** — AI-powered market research with real-time Tavily search  
+- 🧠 **Competitive Mapping** — Deep competitor analysis with live web data  
+- 💰 **Market Sizing (TAM/SAM/SOM)** — Precise market sizing using IBM Granite AI  
 - ⚙️ **Feasibility Assessment** — Technical, operational, and financial viability scoring  
-- 🚀 **Strategic AI** — Llama-powered strategic recommendations via Cerebras  
+- 🚀 **Strategic AI** — IBM Granite-powered strategic recommendations
 
 ![FoundrIQ Architecture](docs/images/architecture.png)
 
@@ -19,16 +23,15 @@
 
 | Metric | Result |
 |--------|--------|
-| Average Analysis Time | **2.3 minutes** per startup idea |
-| Cerebras Inference Latency | **1.5–2.0 seconds** per agent request |
-| Success Rate | **99.7%** task completion |
-| Concurrent Pipelines | **5–10** simultaneous analysis jobs |
-| AI Agents | **5** specialized agents working in parallel |
+| Average Analysis Time | **2-3 minutes** per startup idea |
+| IBM Granite Response Time | **2-4 seconds** per agent request |
+| Success Rate | **99%+ task completion |
+| Concurrent Pipelines | **5 agents** working in parallel |
+| Market Intelligence | **Real-time via Tavily API** |
 
 ## 🧠 Multi-Agent AI Architecture
 
-FoundrIQ's intelligence layer is powered by **five specialized AI agents**, each designed for a specific domain of business analysis.  
-These agents collaborate sequentially using **LangChain** and **LangGraph**, creating an autonomous analysis pipeline.
+FoundrIQ's intelligence layer is powered by **five specialized AI agents**, each using IBM Granite for analysis and Tavily for market research.
 
 | Agent | Purpose |
 |--------|----------|
@@ -42,61 +45,57 @@ Each agent's output is structured and composable, forming a detailed, investor-r
 
 ## 🤖 AI Model Integration
 
-### ⚡ Cerebras + Llama Integration
+### 🔷 IBM Granite + Tavily Integration
 
-FoundrIQ leverages **Cerebras' world-class AI infrastructure** to power ultra-fast Llama model inference:
+FoundrIQ leverages **IBM Granite foundation models** for enterprise-grade AI reasoning combined with **Tavily** for real-time market intelligence:
 
 #### 🏗️ Multi-Agent Architecture
-- **5 Specialized AI Agents** working in parallel
-- **Llama 3.3 70B** for complex reasoning and strategic analysis
-- **Llama 3 8B** for standard analysis tasks and aggregation
-- **Intelligent Model Selection** based on task complexity
+- **5 Specialized AI Agents** working together
+- **IBM Granite models** for business analysis and strategic reasoning
+- **Tavily search API** for real-time market data and competitor research
+- **Intelligent orchestration** based on task requirements
 
-#### 🚀 Performance Benefits
-- **Sub-2s latency** per agent request via Cerebras
-- **4× faster analysis** compared to traditional approaches
-- **Parallel processing** of multiple validation pipelines
-- **Real-time streaming** for live analysis updates
+#### 🚀 Key Capabilities
+- **Enterprise AI reasoning** with IBM Granite foundation models
+- **Real-time market intelligence** via Tavily web search
+- **Parallel agent processing** for comprehensive analysis
+- **Structured JSON outputs** for consistent results
 
 ```javascript
-// Example: Market Analysis Agent using Cerebras
-const cerebras = new Cerebras({ apiKey: process.env.CEREBRAS_API_KEY });
+// Example: Market Analysis Agent using IBM Granite + Tavily
+import ibmWatsonxClient from './ibmWatsonxClient.js';
+import { TavilySearchTool } from './tavily.js';
 
 async function analyzeMarket(ideaDescription) {
-  const response = await cerebras.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: "You are an expert market analyst. Provide comprehensive market insights."
-      },
-      { role: "user", content: ideaDescription }
-    ],
-    model: 'llama-3.3-70b',
-    max_completion_tokens: 4096,
-    temperature: 0.3
-  });
+  // Gather market data with Tavily
+  const tavily = new TavilySearchTool();
+  const marketData = await tavily.search(`${ideaDescription} market trends 2024`);
   
-  return response.choices[0].message.content;
+  // Analyze with IBM Granite
+  const analysis = await ibmWatsonxClient.generateText({
+    systemPrompt: "You are an expert market analyst. Provide comprehensive market insights.",
+    userPrompt: `Analyze: ${ideaDescription}\n\nMarket Data: ${JSON.stringify(marketData)}`
+  }, { temperature: 0.3, maxTokens: 2000 });
+  
+  return analysis;
 }
 ```
 
-#### 🎯 Key Capabilities
-- **Context-aware market trend evaluation** using Llama's advanced reasoning
-- **Competitor differentiation and mapping** with multi-step analysis
-- **Financial forecasting and feasibility scoring** with quantitative insights
-- **Strategic recommendation synthesis** tailored to specific markets
-
-🔹 **Impact**: Enabled human-like reasoning, coherent insight generation, and consistent professional tone across all agent outputs.
+#### 🎯 Technology Benefits
+- **Context-aware market evaluation** using IBM Granite's advanced reasoning
+- **Live competitor data** from Tavily web search
+- **Financial forecasting** with quantitative insights
+- **Strategic recommendations** tailored to specific markets
 
 ## 🧰 Core Technology Stack
 
 | Layer | Technologies |
 |-------|--------------|
 | **Frontend** | React 18, TypeScript, Tailwind CSS, Framer Motion |
-| **Backend** | Node.js (Express), LangChain, LangGraph |
-| **AI / ML** | Cerebras Inference API, Llama 3 models |
-| **Database** | MongoDB (Mongoose ORM) |
-| **Infrastructure** | Dockerized microservices for scalable deployment |
+| **Backend** | Node.js (Express), IBM Watson SDK |
+| **AI / ML** | IBM Granite (Watson), Tavily Search API |
+| **Database** | Appwrite (Authentication, Database, Storage) |
+| **Deployment** | Docker, Docker Compose |
 
 ## 💻 Environment Variables
 
@@ -104,56 +103,73 @@ async function analyzeMarket(ideaDescription) {
 
 ```bash
 # API Configuration
-VITE_API_URL=http://localhost:3001/api
+VITE_API_URL=http://localhost:5000/api
 
-# Authentication (Optional)
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_your-key-here
+# Appwrite Configuration
+VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+VITE_APPWRITE_PROJECT_ID=your_project_id
 ```
 
 ### Backend Variables (.env)
 
 ```bash
 # Server Configuration
-PORT=3001
+PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173
 
-# Database Configuration
-MONGODB_URI=mongodb://localhost:27017/FoundrIQ
-REDIS_HOST=localhost
-REDIS_PORT=6379
+# 🔷 IBM Granite (Required)
+IBM_WATSONX_API_KEY=your_ibm_api_key_here
+IBM_WATSONX_URL=https://us-south.ml.cloud.ibm.com
+IBM_WATSONX_PROJECT_ID=your_project_id_here
+GRANITE_MODEL_ID=ibm/granite-13b-instruct-v2
 
-# 🚀 Cerebras API (Required)
-CEREBRAS_API_KEY=your_cerebras_api_key_here
-
-# Additional API Keys (Optional)
+# 🔍 Tavily Search (Required)
 TAVILY_API_KEY=your_tavily_api_key_here
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+ENABLE_TAVILY=true
 
-# Authentication (Optional)
-CLERK_SECRET_KEY=your_clerk_secret_key_here
-CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
+# 🔐 Appwrite (Required)
+APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=your_project_id
+APPWRITE_API_KEY=your_api_key
+APPWRITE_DATABASE_ID=your_database_id
+
+# Optional
+APPWRITE_REPORTS_BUCKET_ID=your_bucket_id
+APPWRITE_DOCUMENTS_BUCKET_ID=your_bucket_id
+PERPLEXITY_API_KEY=your_perplexity_key
 ```
 
-### 🔑 Getting Your Cerebras API Key
+### 🔑 Getting Your API Keys
 
-1. Visit [Cerebras Inference API](https://inference.cerebras.ai/)
+#### IBM Granite API Key
+1. Visit [IBM Cloud](https://cloud.ibm.com/)
+2. Create a Watson AI instance
+3. Get your API key and project ID
+4. Add to `.env` as shown above
+
+#### Tavily API Key
+1. Visit [Tavily](https://tavily.com/)
 2. Sign up for an account
-3. Navigate to API Keys section
-4. Generate a new API key
-5. Add it to your `.env` file as `CEREBRAS_API_KEY`
+3. Generate an API key
+4. Add to `.env` as `TAVILY_API_KEY`
+
+#### Appwrite Setup
+1. Visit [Appwrite Cloud](https://cloud.appwrite.io/)
+2. Create a new project
+3. Set up database and authentication
+4. Add credentials to `.env`
 
 ## ⚙️ Key Features
 
-- ⚡ **Ultra-Fast AI Analysis**: Generate comprehensive business reports in 2-3 minutes
+- ⚡ **IBM Granite AI**: Enterprise-grade foundation models for business analysis
+- 🔍 **Tavily Search**: Real-time market intelligence and competitor research
 - 🧭 **Interactive Dashboard**: Real-time analytics with live streaming updates
 - 📄 **Professional Reports**: Export detailed analyses as PDF or Markdown
-- 🤖 **Multi-Agent AI System**: 5 specialized agents powered by Llama models on Cerebras
-- 🌊 **Real-Time Streaming**: Watch analysis unfold in real-time with live updates
-- 📊 **Performance Metrics**: Track Cerebras API usage, latency, and model distribution
-- 🐳 **Containerized Architecture**: Docker-based deployment for scalability
-- 🔐 **Secure Authentication**: Optional Clerk integration for user management
-- 🎨 **Modern Dark UI**: Sleek black aesthetic with smooth animations
+- 🤖 **Multi-Agent System**: 5 specialized agents working in parallel
+- 🌊 **Real-Time Analysis**: Watch validation unfold with live updates
+- 🔐 **Appwrite Backend**: Secure OAuth, database, and storage
+- 🎨 **Modern UI**: Sleek dark theme with smooth animations
 
 ## 🚀 Quick Start
 
@@ -161,46 +177,39 @@ CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/FoundrIQ.git
-cd FoundrIQ
+git clone https://github.com/sidgureja7803/FoundrIQ_IBM.git
+cd FoundrIQ_IBM
 
 # Set up environment variables
-cp env.example .env
-# Edit .env and add your CEREBRAS_API_KEY
+cp server/.env.example server/.env
+# Edit server/.env and add your API keys
 
 # Build and start all services
 docker compose up --build
 ```
 
 **Access Points:**
-- 🌐 **Frontend**: http://localhost:3000
-- 🔧 **Backend API**: http://localhost:3001
-- 📊 **Traefik Dashboard**: http://traefik.localhost:8080
+- 🌐 **Frontend**: http://localhost:5173
+- 🔧 **Backend API**: http://localhost:5000
 
 ### 🔧 Manual Setup
 
 #### 1. Backend Setup
 ```bash
-cd backend
+cd server
 npm install
 cp .env.example .env
 
-# Add your Cerebras API key to .env
-echo "CEREBRAS_API_KEY=your_key_here" >> .env
-
-# Test Cerebras integration
-node test-cerebras.js
+# Add your IBM Granite and Tavily API keys to .env
+# See environment variables section above
 
 # Start the server
 npm run dev
-
-# Start the worker (in separate terminal)
-npm run dev:worker
 ```
 
 #### 2. Frontend Setup
 ```bash
-cd frontend
+cd client
 npm install
 cp .env.example .env
 
@@ -211,31 +220,23 @@ npm run dev
 #### 3. Test Your Setup
 ```bash
 # Visit http://localhost:5173
-# Try the "Live Demo" button to test Cerebras integration
 # Submit a sample startup idea for validation
+# Watch the 5 agents analyze your idea in real-time
 ```
 
-## 📚 Documentation
+## 📚 API Endpoints
 
-- 🐳 [Docker Setup Guide](DOCKER.md) - Complete containerization setup
-- 🚀 [Hackathon Demo Instructions](HACKATHON.md) - Live demo and presentation guide  
-- ⚡ [Cerebras Integration Details](CEREBRAS.md) - Deep dive into Llama + Cerebras implementation
-- 🔧 [OpenRouter Setup](OPENROUTER.md) - Alternative model provider configuration
+### Startup Validation
+- `POST /api/ai/idea/evaluate` - Validate a startup idea
+- `GET /api/ai/health` - Check AI services status
 
-## 🧪 Testing Cerebras Integration
+### Agents (via orchestrator)
+- Each agent can be accessed individually
+- Or use the orchestrator for complete analysis
 
-```bash
-# Test your Cerebras API connection
-cd backend
-node test-cerebras.js
-
-# Expected output:
-# ✅ Cerebras client initialized successfully
-# 🦙 Testing Llama model completion...
-# ✅ Completion successful in ~1500ms
-# 🌊 Testing streaming completion...
-# ✅ All tests passed!
-```
+### System
+- `GET /health` - Overall system health
+- `GET /api/metrics/ibm-granite` - IBM Granite usage metrics
 
 ## 🎯 Architecture Deep Dive
 
@@ -243,43 +244,60 @@ node test-cerebras.js
 graph TD
     A[User Input] --> B[Frontend React App]
     B --> C[Express API Server]
-    C --> D[BullMQ Job Queue]
-    D --> E[Worker Process]
-    E --> F[Multi-Agent Pipeline]
-    F --> G[Cerebras API]
-    G --> H[Llama Models]
-    H --> I[Analysis Results]
-    I --> J[MongoDB Storage]
-    J --> K[Real-time Updates]
-    K --> B
+    C --> D[Agent Orchestrator]
+    D --> E[5 Specialized Agents]
+    E --> F[IBM Granite AI]
+    E --> G[Tavily Search]
+    F --> H[Analysis Results]
+    G --> H
+    H --> I[Appwrite Database]
+    I --> J[Real-time Updates]
+    J --> B
 ```
 
 ### Agent Workflow
-1. **Idea Normalizer** (Llama 3 8B) - Structures and clarifies the input
-2. **Market Analyst** (Llama 3.3 70B) - Comprehensive market research  
-3. **Competition Scanner** (Llama 3.3 70B) - Competitive landscape analysis
-4. **Feasibility Evaluator** (Llama 3 8B) - Technical and financial viability
-5. **Strategy Recommender** (Llama 3.3 70B) - Go-to-market strategies
-6. **Report Aggregator** (Llama 3 8B) - Synthesizes final comprehensive report
+1. **Market Analyst** (IBM Granite + Tavily) - Market research and trends
+2. **TAM/SAM Estimator** (IBM Granite + Tavily) - Market sizing
+3. **Competitor Scanner** (IBM Granite + Tavily) - Competitive landscape
+4. **Feasibility Evaluator** (IBM Granite) - Viability assessment
+5. **Strategy Recommender** (IBM Granite) - Strategic recommendations
+
+All agents coordinate through the orchestrator for comprehensive analysis.
 
 ## 🏗️ Architecture Overview
 
 ```
 Frontend (React + TypeScript)
         ↓
-   Backend (Express + LangChain)
+   Backend (Express + IBM Watson SDK)
         ↓
-   Worker Pipeline (Multi-Agent)
+   Agent Orchestrator
         ↓
- Cerebras & Llama Inference
-        ↓
-       MongoDB
+   5 Specialized Agents
+     ↓           ↓
+IBM Granite   Tavily
+     ↓           ↓
+    Appwrite Database
 ```
+
+## 🏆 Hackathon Participation
+
+This project is built for the **Agentic AI Hackathon with IBM watsonx.orchestrate** hosted by lablab.ai.
+
+**Event Link**: https://lablab.ai/event/agentic-ai-hackathon-ibm-watsonx-orchestrate
+
+**Key Technologies Showcased**:
+- IBM Granite foundation models for enterprise AI
+- Multi-agent architecture with intelligent orchestration
+- Real-time market intelligence with Tavily
+- Appwrite for secure backend infrastructure
 
 ---
 
 ❤️ **Built With**
 
-Made with passion for founders, by Siddhant Gureja — powered by Cerebras, Llama 3, LangChain, Docker, and Node.js.
+Made with passion for founders, by **Siddhant Gureja** — powered by **IBM Granite**, **Tavily**, **Appwrite**, and **React**.
 
 FoundrIQ makes startup validation faster, smarter, and more accessible — turning every founder's idea into actionable intelligence.
+
+**[Try the Demo](https://foundriq-ibm.vercel.app)** | **[GitHub](https://github.com/sidgureja7803/FoundrIQ_IBM)** | **[lablab.ai Profile](https://lablab.ai/event/agentic-ai-hackathon-ibm-watsonx-orchestrate)**

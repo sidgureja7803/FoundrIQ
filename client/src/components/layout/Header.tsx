@@ -8,17 +8,17 @@ import { Brain, Lightbulb, LogIn, UserPlus, Cpu, Sparkles } from 'lucide-react';
 const Header: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
-  
+
   // Helper function to render auth section
   const renderAuthSection = () => {
     if (isLoading) {
       return <div className="h-8 w-8 rounded-full animate-pulse bg-dark-700"></div>;
     }
-    
+
     if (isAuthenticated) {
       return <UserMenu showCredits={true} />;
     }
-    
+
     return (
       <div className="flex space-x-3">
         <Link to="/sign-in" className="btn-ghost text-sm py-2 px-4">
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="glass-effect sticky top-0 z-50 border-b border-white/10"
@@ -58,7 +58,7 @@ const Header: React.FC = () => {
                 FoundrIQ
               </span>
               <span className="text-xs text-dark-400 font-medium">
-                Powered by Cerebras
+                Powered by IBM Granite
               </span>
             </div>
           </Link>
@@ -67,31 +67,28 @@ const Header: React.FC = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className={`${
-                isActive('/') 
-                  ? 'text-primary-400' 
+              className={`${isActive('/')
+                  ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
-              } transition-colors duration-200 font-medium`}
+                } transition-colors duration-200 font-medium`}
             >
               Home
             </Link>
             <Link
               to="/submit"
-              className={`${
-                isActive('/submit') 
-                  ? 'text-primary-400' 
+              className={`${isActive('/submit')
+                  ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
-              } transition-colors duration-200 font-medium`}
+                } transition-colors duration-200 font-medium`}
             >
               Validate Idea
             </Link>
             <Link
               to="/dashboard"
-              className={`${
-                isActive('/dashboard') 
-                  ? 'text-primary-400' 
+              className={`${isActive('/dashboard')
+                  ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
-              } transition-colors duration-200 font-medium`}
+                } transition-colors duration-200 font-medium`}
             >
               Dashboard
             </Link>
@@ -108,7 +105,7 @@ const Header: React.FC = () => {
               <span>Live Demo</span>
               <Sparkles size={14} />
             </Link>
-            
+
             {/* Auth or User Menu */}
             {renderAuthSection()}
           </div>

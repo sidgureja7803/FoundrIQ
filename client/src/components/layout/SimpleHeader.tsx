@@ -8,11 +8,11 @@ import { Brain, Lightbulb, LogIn, UserPlus } from 'lucide-react';
  */
 const SimpleHeader: React.FC = () => {
   const location = useLocation();
-  
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="glass-effect sticky top-0 z-50 border-b border-white/10"
@@ -34,7 +34,7 @@ const SimpleHeader: React.FC = () => {
                 FoundrIQ
               </span>
               <span className="text-xs text-dark-400 font-medium">
-                Powered by Cerebras
+                Powered by IBM Granite
               </span>
             </div>
           </Link>
@@ -43,21 +43,19 @@ const SimpleHeader: React.FC = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className={`${
-                isActive('/') 
-                  ? 'text-primary-400' 
+              className={`${isActive('/')
+                  ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
-              } transition-colors duration-200 font-medium`}
+                } transition-colors duration-200 font-medium`}
             >
               Home
             </Link>
             <Link
               to="/validate-idea"
-              className={`${
-                isActive('/validate-idea') 
-                  ? 'text-primary-400' 
+              className={`${isActive('/validate-idea')
+                  ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
-              } transition-colors duration-200 font-medium`}
+                } transition-colors duration-200 font-medium`}
             >
               Validate Idea
             </Link>

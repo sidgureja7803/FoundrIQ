@@ -1,19 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Server, Code } from 'lucide-react';
+import { Shield, Zap, Server, Code, Cpu, Database } from '
+
+lucide - react';
 import { Link } from 'react-router-dom';
 
-const CerebrasAppwriteSection: React.FC = () => {
+const IBMGraniteAppwriteSection: React.FC = () => {
   const technologies = [
     {
-      name: 'Cerebras',
-      icon: <img src="https://cerebras.net/wp-content/uploads/2022/05/cerebras-logo.svg" alt="Cerebras Logo" className="w-12 h-12" />,
-      description: 'Ultra-fast AI inference with Cerebras hardware acceleration.',
-      details: 'Powered by Llama 3 and Llama 3.3 models on specialized hardware.',
+      name: 'IBM Granite',
+      icon: <Cpu size={48} className="text-blue-400" />,
+      description: 'Enterprise-ready foundation models powered by IBM Watson.',
+      details: 'Advanced AI reasoning with IBM Granite models designed for business applications.',
     },
     {
       name: 'Appwrite',
-      icon: <img src="https://appwrite.io/images/appwrite.svg" alt="Appwrite Logo" className="w-12 h-12" />,
+      icon: <Database size={48} className="text-pink-400" />,
       description: 'Secure, scalable backend infrastructure with Appwrite.',
       details: 'Authentication, database, and storage managed by Appwrite Cloud.',
     },
@@ -22,18 +24,18 @@ const CerebrasAppwriteSection: React.FC = () => {
   const features = [
     {
       icon: <Zap size={24} className="text-accent-purple" />,
-      title: 'Ultra-Fast AI Analysis',
-      description: 'Cerebras infrastructure delivers results in seconds, not minutes.',
+      title: 'IBM Granite AI',
+      description: 'Enterprise-grade AI models deliver accurate startup insights.',
     },
     {
       icon: <Shield size={24} className="text-accent-cyan" />,
-      title: 'Enterprise-Grade Security',
+      title: 'Enterprise Security',
       description: 'Appwrite provides secure authentication and data management.',
     },
     {
       icon: <Server size={24} className="text-accent-emerald" />,
-      title: 'Scalable Infrastructure',
-      description: 'Built to handle thousands of concurrent analysis jobs.',
+      title: 'Tavily Search',
+      description: 'Real-time market intelligence powered by advanced web search.',
     },
     {
       icon: <Code size={24} className="text-accent-orange" />,
@@ -45,10 +47,10 @@ const CerebrasAppwriteSection: React.FC = () => {
   return (
     <section className="py-20 relative">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-      
+
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -64,11 +66,11 @@ const CerebrasAppwriteSection: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            We've partnered with cutting-edge technologies to deliver the most powerful 
+            We've partnered with IBM and Appwrite to deliver the most powerful
             startup validation platform available.
           </motion.p>
         </div>
-        
+
         {/* Core Technologies */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
           {technologies.map((tech, index) => (
@@ -93,7 +95,7 @@ const CerebrasAppwriteSection: React.FC = () => {
             </motion.div>
           ))}
         </div>
-        
+
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {features.map((feature, index) => (
@@ -113,7 +115,7 @@ const CerebrasAppwriteSection: React.FC = () => {
             </motion.div>
           ))}
         </div>
-        
+
         {/* Legal Links */}
         <div className="mt-16 text-center">
           <motion.div
@@ -136,9 +138,9 @@ const CerebrasAppwriteSection: React.FC = () => {
               </Link>
             </div>
           </motion.div>
-          
+
           <p className="text-dark-500 text-xs max-w-xl mx-auto">
-            By using FoundrIQ, you agree to our Terms of Service and Privacy Policy. We use Cerebras and Appwrite 
+            By using FoundrIQ, you agree to our Terms of Service and Privacy Policy. We use IBM Granite and Appwrite
             technologies to provide our services. All data is processed according to our data processing guidelines.
           </p>
         </div>
@@ -147,4 +149,4 @@ const CerebrasAppwriteSection: React.FC = () => {
   );
 };
 
-export default CerebrasAppwriteSection;
+export default IBMGraniteAppwriteSection;

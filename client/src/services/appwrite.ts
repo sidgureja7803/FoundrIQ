@@ -4,7 +4,7 @@ import { Client, Account, Databases, ID, Query, Storage } from 'appwrite';
 const client = new Client();
 
 client
-  .setEndpoint('https://cloud.appwrite.io/v1') 
+  .setEndpoint('https://cloud.appwrite.io/v1')
   .setProject('testProject') // Using a generic project ID for now
 
 // Export initialized instances
@@ -32,12 +32,12 @@ export const appwriteAuth = {
         password,
         name
       );
-      
+
       if (newAccount) {
         // Create session (login)
         return await appwriteAuth.login(email, password);
       }
-      
+
       return newAccount;
     } catch (error) {
       console.error('Error creating account:', error);
@@ -74,7 +74,7 @@ export const appwriteAuth = {
       return null;
     }
   },
-  
+
   // Check if user is logged in
   isLoggedIn: async () => {
     try {
@@ -82,6 +82,34 @@ export const appwriteAuth = {
       return !!user;
     } catch (error) {
       return false;
+    }
+  },
+
+  // OAuth with GitHub
+  loginWithGitHub: () => {
+    try {
+      account.createOAuth2Session(
+        'github' as any, // Appwrite SDK type issue
+        `${window.location.origin}/dashboard`, // Success redirect
+        `${window.location.origin}/sign-in` // Failure redirect
+      );
+    } catch (error) {
+      console.error('Error logging in with GitHub:', error);
+      throw error;
+    }
+  },
+
+  // OAuth with Google
+  loginWithGoogle: () => {
+    try {
+      account.createOAuth2Session(
+        'google' as any, // Appwrite SDK type issue
+        `${window.location.origin}/dashboard`, // Success redirect
+        `${window.location.origin}/sign-in` // Failure redirect
+      );
+    } catch (error) {
+      console.error('Error logging in with Google:', error);
+      throw error;
     }
   }
 };
@@ -181,7 +209,7 @@ export const ideaService = {
           Query.equal('userId', userId)
         ]
       );
-      
+
       return {
         total: ideas.total,
         reachedLimit: ideas.total >= 5

@@ -7,14 +7,14 @@ const FirstPage: React.FC = () => {
   return (
     <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center py-16 relative">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-      
-      <motion.div 
+
+      <motion.div
         className="container mx-auto px-4 text-center"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        <motion.h1 
+        <motion.h1
           className="text-5xl md:text-7xl font-bold mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -22,8 +22,8 @@ const FirstPage: React.FC = () => {
         >
           An AI researcher for your projects
         </motion.h1>
-        
-        <motion.p 
+
+        <motion.p
           className="text-xl md:text-2xl text-gray-300 mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -31,7 +31,27 @@ const FirstPage: React.FC = () => {
         >
           Document well researched ideas with AI
         </motion.p>
-        
+
+        <motion.div
+          className="flex flex-wrap justify-center gap-6 mb-12 text-sm text-gray-400"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.35 }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-blue-400">⚡</span>
+            <span>IBM Granite AI</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-emerald-400">🔍</span>
+            <span>Tavily Search</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-pink-400">🔐</span>
+            <span>Appwrite Backend</span>
+          </div>
+        </motion.div>
+
         {/* Login/Signup buttons */}
         <motion.div
           className="flex justify-center gap-4 mb-8"
@@ -39,20 +59,20 @@ const FirstPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          <Link 
-            to="/sign-in" 
+          <Link
+            to="/sign-in"
             className="px-8 py-3 bg-transparent hover:bg-white/10 border border-white/30 rounded-lg text-white font-medium transition-all"
           >
             Log In
           </Link>
-          <Link 
-            to="/sign-up" 
+          <Link
+            to="/sign-up"
             className="px-8 py-3 bg-primary-600 hover:bg-primary-700 rounded-lg text-white font-medium transition-all"
           >
             Sign Up
           </Link>
         </motion.div>
-        
+
         <motion.div
           className="flex justify-center items-center mb-16"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -61,8 +81,8 @@ const FirstPage: React.FC = () => {
         >
           <PlayCircle size={56} className="text-white opacity-80 hover:opacity-100 transition-opacity cursor-pointer" />
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="mt-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
