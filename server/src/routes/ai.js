@@ -4,17 +4,19 @@
  */
 import express from "express";
 import startupValidationService from "../services/startupValidationService.js";
+import appwriteService from "../services/appwriteService.js";
 
 const router = express.Router();
 
 /**
  * POST /api/ai/idea/evaluate
  * Comprehensive startup idea validation using IBM Granite and Tavily
- * body: { idea: string }
+ * Saves results to Appwrite database if user is authenticated
+ * body: { idea: string, userId?: string, title?: string, category?: string }
  */
 router.post("/idea/evaluate", async (req, res) => {
     try {
-        const { idea } = req.body;
+        const { idea, userId, title, category, problemSolved, targetAudience } = req.body;
 
         if (!idea || typeof idea !== "string") {
             return res.status(400).json({
@@ -25,12 +27,35 @@ router.post("/idea/evaluate", async (req, res) => {
 
         console.log('[AI Route] Received validation request for idea');
 
-        // Use the unified validation service
-        const validationResults = await startupValidationService.validateIdea(idea);
+        // Prepare idea data
+        const ideaData = {
+            description: idea,
+            title: title || 'Untitled Idea',
+            category: category || 'General',
+            problemSolved,
+            targetAudience
+        };
+
+        // Use the unified validation service (runs all 5 agents)
+        const validationResults = await startupValidationService.validateIdea(ideaData);
+
+        // Save to Appwrite if userId provided
+        let savedIdea = null;
+        if (userId && appwriteService.enabled) {
+            try {
+                savedIdea = await appwriteService.saveIdea(userId, ideaData, validationResults);
+                console.log(`[AI Route] Saved idea to Appwrite: ${savedIdea.$id}`);
+            } catch (saveError) {
+                console.error('[AI Route] Failed to save to Appwrite:', saveError.message);
+                // Continue even if save fails
+            }
+        }
 
         return res.json({
             success: true,
-            data: validationResults
+            data: validationResults,
+            saved: !!savedIdea,
+            ideaId: savedIdea?.$id
         });
     } catch (err) {
         console.error("[AI Route] Error evaluating idea:", err);

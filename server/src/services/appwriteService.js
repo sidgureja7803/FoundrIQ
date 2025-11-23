@@ -9,7 +9,7 @@ const { Client, Databases, Users, ID, Permission, Role, Storage } = sdk;
 // Initialize Appwrite client
 const client = new Client()
   .setEndpoint(process.env.APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
-  .setProject(process.env.APPWRITE_PROJECT_ID) 
+  .setProject(process.env.APPWRITE_PROJECT_ID)
   .setKey(process.env.APPWRITE_API_KEY);
 
 // Initialize Appwrite services
@@ -36,20 +36,31 @@ const BUCKETS = {
  */
 class AppwriteService {
   constructor() {
+    this.enabled = true;
+
     if (!process.env.APPWRITE_API_KEY) {
       console.error("APPWRITE_API_KEY is not defined in environment variables");
+      this.enabled = false;
     }
     if (!process.env.APPWRITE_PROJECT_ID) {
       console.error("APPWRITE_PROJECT_ID is not defined in environment variables");
+      this.enabled = false;
     }
     if (!process.env.APPWRITE_DATABASE_ID) {
       console.error("APPWRITE_DATABASE_ID is not defined in environment variables");
+      this.enabled = false;
     }
     if (!process.env.APPWRITE_REPORTS_BUCKET_ID) {
       console.warn("APPWRITE_REPORTS_BUCKET_ID is not defined in environment variables");
     }
     if (!process.env.APPWRITE_DOCUMENTS_BUCKET_ID) {
       console.warn("APPWRITE_DOCUMENTS_BUCKET_ID is not defined in environment variables");
+    }
+
+    if (this.enabled) {
+      console.log('[AppwriteService] Initialized successfully');
+    } else {
+      console.warn('[AppwriteService] Service disabled - missing required configuration');
     }
   }
 
@@ -61,7 +72,7 @@ class AppwriteService {
   async createIdea(ideaData) {
     try {
       const { userId, title, description, isPublic = false } = ideaData;
-      
+
       // Create idea document
       const idea = await databases.createDocument(
         DATABASE_ID,
@@ -80,14 +91,14 @@ class AppwriteService {
           ...(isPublic ? [Permission.read(Role.any())] : [])
         ]
       );
-      
+
       return idea;
     } catch (error) {
       console.error('Appwrite Error - Create Idea:', error);
       throw new Error(`Failed to create idea: ${error.message}`);
     }
   }
-  
+
   /**
    * Update an existing idea
    * @param {string} ideaId - ID of idea to update
@@ -97,7 +108,7 @@ class AppwriteService {
   async updateIdea(ideaId, ideaData) {
     try {
       const { title, description, isPublic } = ideaData;
-      
+
       // Update the permissions if visibility changed
       let permissions = [];
       if (isPublic !== undefined) {
@@ -107,13 +118,13 @@ class AppwriteService {
           COLLECTIONS.IDEAS,
           ideaId
         );
-        
+
         permissions = [
           Permission.read(Role.user(currentIdea.userId)),
           ...(isPublic ? [Permission.read(Role.any())] : [])
         ];
       }
-      
+
       // Update idea document
       const updatedIdea = await databases.updateDocument(
         DATABASE_ID,
@@ -127,14 +138,14 @@ class AppwriteService {
         },
         permissions.length > 0 ? permissions : undefined
       );
-      
+
       return updatedIdea;
     } catch (error) {
       console.error('Appwrite Error - Update Idea:', error);
       throw new Error(`Failed to update idea: ${error.message}`);
     }
   }
-  
+
   /**
    * Get idea by ID
    * @param {string} ideaId - ID of idea to retrieve
@@ -152,7 +163,7 @@ class AppwriteService {
       throw new Error(`Failed to get idea: ${error.message}`);
     }
   }
-  
+
   /**
    * Get ideas by user ID
    * @param {string} userId - User ID
@@ -167,14 +178,14 @@ class AppwriteService {
           sdk.Query.equal('userId', userId)
         ]
       );
-      
+
       return response.documents;
     } catch (error) {
       console.error('Appwrite Error - Get User Ideas:', error);
       throw new Error(`Failed to get user ideas: ${error.message}`);
     }
   }
-  
+
   /**
    * Get all public ideas
    * @returns {Promise<Array>} Array of public idea documents
@@ -188,14 +199,14 @@ class AppwriteService {
           sdk.Query.equal('isPublic', true)
         ]
       );
-      
+
       return response.documents;
     } catch (error) {
       console.error('Appwrite Error - Get Public Ideas:', error);
       throw new Error(`Failed to get public ideas: ${error.message}`);
     }
   }
-  
+
   /**
    * Delete an idea
    * @param {string} ideaId - ID of idea to delete
@@ -213,7 +224,7 @@ class AppwriteService {
       throw new Error(`Failed to delete idea: ${error.message}`);
     }
   }
-  
+
   /**
    * Save analysis results
    * @param {string} ideaId - ID of related idea
@@ -224,7 +235,7 @@ class AppwriteService {
     try {
       // Get the idea to check user ID and permissions
       const idea = await this.getIdea(ideaId);
-      
+
       // Create analysis results document
       const analysisResults = await databases.createDocument(
         DATABASE_ID,
@@ -241,7 +252,7 @@ class AppwriteService {
           ...(idea.isPublic ? [Permission.read(Role.any())] : [])
         ]
       );
-      
+
       // Update the idea with reference to analysis
       await databases.updateDocument(
         DATABASE_ID,
@@ -253,14 +264,14 @@ class AppwriteService {
           updatedAt: new Date().toISOString()
         }
       );
-      
+
       return analysisResults;
     } catch (error) {
       console.error('Appwrite Error - Save Analysis Results:', error);
       throw new Error(`Failed to save analysis results: ${error.message}`);
     }
   }
-  
+
   /**
    * Get analysis results for an idea
    * @param {string} ideaId - ID of related idea
@@ -275,18 +286,18 @@ class AppwriteService {
           sdk.Query.equal('ideaId', ideaId)
         ]
       );
-      
+
       if (response.documents.length === 0) {
         return null;
       }
-      
+
       return response.documents[0];
     } catch (error) {
       console.error('Appwrite Error - Get Analysis Results:', error);
       throw new Error(`Failed to get analysis results: ${error.message}`);
     }
   }
-  
+
   /**
    * Create or update job status
    * @param {string} jobId - Job ID
@@ -303,7 +314,7 @@ class AppwriteService {
           COLLECTIONS.JOBS,
           jobId
         );
-        
+
         // Update existing job
         return await databases.updateDocument(
           DATABASE_ID,
@@ -332,7 +343,7 @@ class AppwriteService {
       throw new Error(`Failed to save job status: ${error.message}`);
     }
   }
-  
+
   /**
    * Get a job by ID
    * @param {string} jobId - Job ID
@@ -384,7 +395,7 @@ class AppwriteService {
       throw new Error(`Failed to upload report: ${error.message}`);
     }
   }
-  
+
   /**
    * Check if user has reached free tier limit
    * @param {string} userId - User ID
@@ -399,10 +410,10 @@ class AppwriteService {
           sdk.Query.equal('userId', userId)
         ]
       );
-      
+
       const FREE_TIER_LIMIT = 5;
       const count = response.total;
-      
+
       return {
         total: count,
         limit: FREE_TIER_LIMIT,
