@@ -3,8 +3,8 @@
  * Handles idea-related API endpoints
  */
 
-const appwriteService = require('../services/appwriteService');
-const ideaOrchestrator = require('../agents/graph/ideaOrchestrator');
+import appwriteService from '../services/appwriteService.js';
+import agentOrchestrator from '../agents/agentOrchestrator.js';
 
 /**
  * Create a new idea and start analysis
@@ -42,7 +42,7 @@ const createIdea = async (req, res) => {
     const jobId = idea.$id; // Use idea ID as job ID
     
     // Queue the analysis job (this runs asynchronously)
-    ideaOrchestrator.run(description, jobId)
+    agentOrchestrator.runAnalysis({ description }, { sequential: true })
       .then(async (result) => {
         // Once analysis is complete, save results to Appwrite
         await appwriteService.saveAnalysisResults(idea.$id, result);
@@ -297,7 +297,7 @@ const getJobStatus = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   createIdea,
   getIdea,
   getUserIdeas,

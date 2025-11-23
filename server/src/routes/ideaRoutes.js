@@ -3,13 +3,14 @@
  * Handles all idea-related API endpoints
  */
 
-const express = require('express');
+import express from 'express';
+import ideaController from '../controllers/ideaController.js';
+import { requireAuth } from '../middleware/auth.js';
+
 const router = express.Router();
-const ideaController = require('../controllers/ideaController');
-const authMiddleware = require('../middleware/auth');
 
 // Apply auth middleware to all routes
-router.use(authMiddleware);
+router.use(requireAuth);
 
 // Create a new idea
 router.post('/', ideaController.createIdea);
@@ -32,4 +33,4 @@ router.delete('/:ideaId', ideaController.deleteIdea);
 // Get job status
 router.get('/job/:jobId', ideaController.getJobStatus);
 
-module.exports = router;
+export default router;

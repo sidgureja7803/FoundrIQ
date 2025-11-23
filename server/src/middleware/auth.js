@@ -3,13 +3,13 @@
  * Verifies user authentication using Appwrite
  */
 
-const sdk = require('node-appwrite');
+import sdk from 'node-appwrite';
 const { Client, Account, ID } = sdk;
 
 // Initialize Appwrite client
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1') // Replace with your Appwrite endpoint
-  .setProject('foundriQ'); // Replace with your project ID
+  .setEndpoint(process.env.APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+  .setProject(process.env.APPWRITE_PROJECT_ID);
 
 // Initialize Appwrite account
 const account = new Account(client);
@@ -53,4 +53,5 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export const requireAuth = authMiddleware;
+export default authMiddleware;

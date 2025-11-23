@@ -4,16 +4,17 @@
  * Note: Most auth is handled client-side with Appwrite SDK
  */
 
-const express = require('express');
-const router = express.Router();
-const sdk = require('node-appwrite');
+import express from 'express';
+import sdk from 'node-appwrite';
+import authMiddleware from '../middleware/auth.js';
+
 const { Client, Account, ID } = sdk;
-const authMiddleware = require('../middleware/auth');
+const router = express.Router();
 
 // Initialize Appwrite client
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1') // Replace with your Appwrite endpoint
-  .setProject('foundriQ') // Replace with your project ID
+  .setEndpoint(process.env.APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+  .setProject(process.env.APPWRITE_PROJECT_ID)
   .setKey(process.env.APPWRITE_API_KEY);
 
 // Initialize Appwrite account
@@ -43,4 +44,4 @@ router.get('/profile', authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

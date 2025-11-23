@@ -3,7 +3,7 @@
  * Replaces MongoDB ResearchPack model
  */
 
-const sdk = require('node-appwrite');
+import sdk from 'node-appwrite';
 const { ID, Query } = sdk;
 
 const COLLECTION_ID = 'researchPacks';

@@ -3,8 +3,8 @@
  * Handles all interactions with Appwrite backend
  */
 
-const sdk = require('node-appwrite');
-const { Client, Databases, Users, ID, Permission, Role, Storage } = sdk;
+import sdk from 'node-appwrite';
+const { Client, Databases, Users, ID, Permission, Role, Storage, Query } = sdk;
 
 // Initialize Appwrite client
 const client = new Client()
@@ -175,7 +175,7 @@ class AppwriteService {
         DATABASE_ID,
         COLLECTIONS.IDEAS,
         [
-          sdk.Query.equal('userId', userId)
+          Query.equal('userId', userId)
         ]
       );
 
@@ -196,7 +196,7 @@ class AppwriteService {
         DATABASE_ID,
         COLLECTIONS.IDEAS,
         [
-          sdk.Query.equal('isPublic', true)
+          Query.equal('isPublic', true)
         ]
       );
 
@@ -283,7 +283,7 @@ class AppwriteService {
         DATABASE_ID,
         COLLECTIONS.ANALYSIS_RESULTS,
         [
-          sdk.Query.equal('ideaId', ideaId)
+          Query.equal('ideaId', ideaId)
         ]
       );
 
@@ -407,7 +407,7 @@ class AppwriteService {
         DATABASE_ID,
         COLLECTIONS.IDEAS,
         [
-          sdk.Query.equal('userId', userId)
+          Query.equal('userId', userId)
         ]
       );
 
@@ -426,4 +426,4 @@ class AppwriteService {
   }
 }
 
-module.exports = new AppwriteService();
+export default new AppwriteService();
