@@ -3,8 +3,7 @@
  * Replaces MongoDB ResearchPack model
  */
 
-import sdk from 'node-appwrite';
-const { ID, Query } = sdk;
+import { Client, Databases, ID, Query } from 'node-appwrite';
 
 const COLLECTION_ID = 'researchPacks';
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
@@ -13,7 +12,6 @@ const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
 let client, databases;
 function getAppwrite() {
   if (!client) {
-    const { Client, Databases } = sdk;
     client = new Client()
       .setEndpoint(process.env.APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
       .setProject(process.env.APPWRITE_PROJECT_ID)

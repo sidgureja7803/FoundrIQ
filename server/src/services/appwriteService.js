@@ -3,8 +3,7 @@
  * Handles all interactions with Appwrite backend
  */
 
-import sdk from 'node-appwrite';
-const { Client, Databases, Users, ID, Permission, Role, Storage, Query } = sdk;
+import { Client, Databases, Users, ID, Permission, Role, Storage, Query } from 'node-appwrite';
 
 // Initialize Appwrite client
 const client = new Client()

@@ -3,8 +3,7 @@
  * Verifies user authentication using Appwrite
  */
 
-import sdk from 'node-appwrite';
-const { Client, Account, ID } = sdk;
+import { Client, Account, ID } from 'node-appwrite';
 
 // Initialize Appwrite client
 const client = new Client()
@@ -51,6 +50,36 @@ const authMiddleware = async (req, res, next) => {
       message: 'Invalid or expired authentication token'
     });
   }
+};
+
+/**
+ * Optional authentication middleware
+ * Attaches user info if authenticated, but allows request to proceed even if not
+ */
+export const optionalAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // No authentication provided, but that's okay - just proceed
+    return next();
+  }
+  
+  const token = authHeader.split(' ')[1];
+  
+  try {
+    client.setJWT(token);
+    const user = await account.get();
+    
+    // Store user details in request object if authenticated
+    req.userId = user.$id;
+    req.userEmail = user.email;
+    req.userName = user.name;
+  } catch (error) {
+    // Authentication failed, but we don't block the request
+    console.warn('Optional authentication failed:', error.message);
+  }
+  
+  next();
 };
 
 export const requireAuth = authMiddleware;

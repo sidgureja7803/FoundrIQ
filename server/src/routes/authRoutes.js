@@ -5,10 +5,8 @@
  */
 
 import express from 'express';
-import sdk from 'node-appwrite';
+import { Client, Account, ID } from 'node-appwrite';
 import authMiddleware from '../middleware/auth.js';
-
-const { Client, Account, ID } = sdk;
 const router = express.Router();
 
 // Initialize Appwrite client
