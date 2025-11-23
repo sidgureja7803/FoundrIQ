@@ -17,8 +17,6 @@
 - ⚙️ **Feasibility Assessment** — Technical, operational, and financial viability scoring  
 - 🚀 **Strategic AI** — IBM Granite-powered strategic recommendations
 
-![FoundrIQ Architecture](docs/images/architecture.png)
-
 ## ⚡ Performance Metrics
 
 | Metric | Result |
