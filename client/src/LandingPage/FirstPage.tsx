@@ -5,17 +5,31 @@ import { Link } from 'react-router-dom';
 
 const FirstPage: React.FC = () => {
   return (
-    <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center py-16 relative">
+    <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center py-16 relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
 
       <motion.div
-        className="container mx-auto px-4 text-center"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-7xl"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+        >
+          <a href="https://lablab.ai/event/agentic-ai-hackathon-ibm-watsonx-orchestrate" target="_blank" rel="noopener noreferrer" className="inline-block">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-full text-sm mb-4 hover:border-purple-500/50 transition-all">
+              <span className="text-purple-400">🏆</span>
+              <span className="text-gray-300">Built for lablab.ai Hackathon</span>
+            </div>
+          </a>
+        </motion.div>
+
         <motion.h1
-          className="text-5xl md:text-7xl font-bold mb-6"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -24,7 +38,7 @@ const FirstPage: React.FC = () => {
         </motion.h1>
 
         <motion.p
-          className="text-xl md:text-2xl text-gray-300 mb-12"
+          className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-12 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
@@ -33,13 +47,13 @@ const FirstPage: React.FC = () => {
         </motion.p>
 
         <motion.div
-          className="flex flex-wrap justify-center gap-6 mb-12 text-sm text-gray-400"
+          className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12 text-sm text-gray-400 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
         >
           <div className="flex items-center gap-2">
-            <span className="text-blue-400">⚡</span>
+            <img src="https://www.ibm.com/brand/experience-guides/developer/b1db1ae501d522a1a4b49613fe07c9f1/01_8-bar-positive.svg" alt="IBM" className="h-5 w-auto" />
             <span>IBM Granite AI</span>
           </div>
           <div className="flex items-center gap-2">
@@ -47,14 +61,14 @@ const FirstPage: React.FC = () => {
             <span>Tavily Search</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-pink-400">🔐</span>
+            <img src="https://appwrite.io/images/logos/appwrite.svg" alt="Appwrite" className="h-5 w-auto" />
             <span>Appwrite Backend</span>
           </div>
         </motion.div>
 
         {/* Login/Signup buttons */}
         <motion.div
-          className="flex justify-center gap-4 mb-8"
+          className="flex flex-wrap justify-center gap-4 mb-8 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
@@ -83,12 +97,12 @@ const FirstPage: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="mt-12"
+          className="mt-12 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          <h2 className="text-2xl md:text-4xl font-semibold text-green-400 mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-4xl font-semibold text-green-400 mb-4">
             Tropical Mosquito-Proof Travel Socks
           </h2>
           <div className="w-full max-w-3xl mx-auto h-1 bg-gradient-to-r from-transparent via-green-400/50 to-transparent"></div>

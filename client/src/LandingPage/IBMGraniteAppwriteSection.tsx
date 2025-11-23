@@ -7,13 +7,13 @@ const IBMGraniteAppwriteSection: React.FC = () => {
   const technologies = [
     {
       name: 'IBM Granite',
-      icon: <Cpu size={48} className="text-blue-400" />,
+      logo: 'https://www.ibm.com/brand/experience-guides/developer/b1db1ae501d522a1a4b49613fe07c9f1/01_8-bar-positive.svg',
       description: 'Enterprise-ready foundation models powered by IBM Watson.',
       details: 'Advanced AI reasoning with IBM Granite models designed for business applications.',
     },
     {
       name: 'Appwrite',
-      icon: <Database size={48} className="text-pink-400" />,
+      logo: 'https://appwrite.io/images/logos/appwrite.svg',
       description: 'Secure, scalable backend infrastructure with Appwrite.',
       details: 'Authentication, database, and storage managed by Appwrite Cloud.',
     },
@@ -43,13 +43,13 @@ const IBMGraniteAppwriteSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="text-center mb-16">
           <motion.h2
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 px-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -58,7 +58,7 @@ const IBMGraniteAppwriteSection: React.FC = () => {
             Powered by Industry-Leading Technology
           </motion.h2>
           <motion.p
-            className="text-lg text-dark-400 max-w-2xl mx-auto"
+            className="text-base sm:text-lg text-dark-400 max-w-2xl mx-auto px-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -70,24 +70,24 @@ const IBMGraniteAppwriteSection: React.FC = () => {
         </div>
 
         {/* Core Technologies */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 mb-16">
           {technologies.map((tech, index) => (
             <motion.div
               key={tech.name}
-              className="bg-dark-900/50 backdrop-blur-sm border border-dark-800 rounded-xl p-8 hover:shadow-lg hover:shadow-primary-500/10 transition-all"
+              className="bg-dark-900/50 backdrop-blur-sm border border-dark-800 rounded-xl p-6 sm:p-8 hover:shadow-lg hover:shadow-primary-500/10 transition-all"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: index * 0.2 }}
             >
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-dark-800/50 rounded-xl flex items-center justify-center">
-                  {tech.icon}
+                <div className="p-4 bg-dark-800/50 rounded-xl flex items-center justify-center min-w-[80px]">
+                  <img src={tech.logo} alt={tech.name} className="h-12 w-auto" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">{tech.name}</h3>
-                  <p className="text-dark-300 mb-3">{tech.description}</p>
-                  <p className="text-dark-500 text-sm">{tech.details}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2">{tech.name}</h3>
+                  <p className="text-dark-300 mb-3 text-sm sm:text-base">{tech.description}</p>
+                  <p className="text-dark-500 text-xs sm:text-sm">{tech.details}</p>
                 </div>
               </div>
             </motion.div>

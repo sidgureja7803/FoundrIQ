@@ -9,11 +9,11 @@ import Footer from '../components/layout/Footer';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
+    <div className="flex flex-col min-h-screen bg-black text-white overflow-x-hidden">
       <SimpleHeader />
 
       <motion.main
-        className="flex-grow"
+        className="flex-grow w-full max-w-[100vw] overflow-x-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}

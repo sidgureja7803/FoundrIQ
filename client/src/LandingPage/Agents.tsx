@@ -36,10 +36,10 @@ const Agents: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
       
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ const Agents: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">How It Works</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 px-2">How It Works</h2>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
@@ -70,9 +70,9 @@ const Agents: React.FC = () => {
                 </span>
               </div>
               
-              <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold mb-3">{step.title}</h3>
               
-              <p className="text-gray-400">
+              <p className="text-sm sm:text-base text-gray-400">
                 {step.description}
               </p>
             </motion.div>
@@ -86,10 +86,10 @@ const Agents: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.8 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 px-2">
             Ready to Validate Your Business Idea?
           </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto px-2">
             Join entrepreneurs turning ideas into successful businesses.
           </p>
           

@@ -49,10 +49,10 @@ const Functionality: React.FC = () => {
   };
 
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
       
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Column */}
           <motion.div 
@@ -63,7 +63,7 @@ const Functionality: React.FC = () => {
             transition={{ duration: 0.7 }}
           >
             <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-4"
+              className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -74,7 +74,7 @@ const Functionality: React.FC = () => {
             </motion.h2>
             
             <motion.p 
-              className="text-lg text-gray-300 mb-10 max-w-xl"
+              className="text-base sm:text-lg text-gray-300 mb-10 max-w-xl"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -115,7 +115,7 @@ const Functionality: React.FC = () => {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-gray-800 flex flex-col items-center justify-center hover:border-gray-700 transition-all hover:shadow-lg hover:shadow-primary-500/5"
+                className="bg-gray-900/50 backdrop-blur-sm p-6 sm:p-8 rounded-xl border border-gray-800 flex flex-col items-center justify-center hover:border-gray-700 transition-all hover:shadow-lg hover:shadow-primary-500/5"
                 variants={itemVariants}
                 transition={{ duration: 0.5, delay: feature.delay }}
               >
