@@ -14,11 +14,13 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import EnvChecker from './components/EnvChecker';
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <div className="overflow-x-hidden">
+        <EnvChecker />
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />

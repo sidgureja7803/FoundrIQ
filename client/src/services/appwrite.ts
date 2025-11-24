@@ -7,17 +7,31 @@ const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://clou
 const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const appwriteDatabaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 
+// Log configuration on load
+console.log('🔧 Appwrite Configuration:');
+console.log('Endpoint:', appwriteEndpoint);
+console.log('Project ID:', appwriteProjectId ? '✅ Set' : '❌ Missing');
+console.log('Database ID:', appwriteDatabaseId ? '✅ Set' : '❌ Missing');
+
 if (!appwriteProjectId) {
-  console.error('VITE_APPWRITE_PROJECT_ID is not set in environment variables');
+  console.error('❌ VITE_APPWRITE_PROJECT_ID is not set in environment variables');
+  console.error('Please check your .env file in the client folder');
 }
 
 if (!appwriteDatabaseId) {
-  console.error('VITE_APPWRITE_DATABASE_ID is not set in environment variables');
+  console.error('❌ VITE_APPWRITE_DATABASE_ID is not set in environment variables');
+  console.error('Please check your .env file in the client folder');
 }
 
-client
-  .setEndpoint(appwriteEndpoint)
-  .setProject(appwriteProjectId)
+if (appwriteProjectId) {
+  client
+    .setEndpoint(appwriteEndpoint)
+    .setProject(appwriteProjectId);
+  
+  console.log('✅ Appwrite client initialized successfully');
+} else {
+  console.error('❌ Cannot initialize Appwrite client - missing Project ID');
+}
 
 // Export initialized instances
 export const account = new Account(client);
@@ -60,9 +74,17 @@ export const appwriteAuth = {
   // Login
   login: async (email: string, password: string) => {
     try {
-      return await account.createEmailSession(email, password);
-    } catch (error) {
-      console.error('Error logging in:', error);
+      console.log('🔐 Creating email session...');
+      const session = await account.createEmailPasswordSession(email, password);
+      console.log('✅ Session created successfully');
+      return session;
+    } catch (error: any) {
+      console.error('❌ Login error:', error);
+      console.error('Error details:', {
+        code: error.code,
+        type: error.type,
+        message: error.message
+      });
       throw error;
     }
   },

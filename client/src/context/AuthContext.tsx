@@ -76,18 +76,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       clearError();
       
+      console.log('Attempting login for:', email);
       await appwriteAuth.login(email, password);
+      
+      console.log('Login successful, fetching user data...');
       const currentUser = await appwriteAuth.getCurrentUser();
       
       if (currentUser) {
+        console.log('User authenticated:', currentUser.email);
         setUser(currentUser as User);
         setIsAuthenticated(true);
         navigate('/my-ideas');
       }
     } catch (err: any) {
       console.error('Login failed:', err);
-      setError(err?.message || 'Login failed. Please check your credentials.');
+      
+      // Better error messages
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err.code === 401) {
+        errorMessage = 'Invalid email or password. Please check your credentials.';
+      } else if (err.code === 429) {
+        errorMessage = 'Too many attempts. Please wait a few minutes and try again.';
+      } else if (err.message?.includes('Project with the requested ID')) {
+        errorMessage = 'Configuration error. Please contact support.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
       setIsAuthenticated(false);
+      throw err; // Re-throw so SignInPage can catch it
     } finally {
       setIsLoading(false);
     }
