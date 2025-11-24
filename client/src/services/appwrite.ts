@@ -3,7 +3,7 @@ import { Client, Account, Databases, ID, Query, Storage } from 'appwrite';
 // Initialize Appwrite
 const client = new Client();
 
-const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1';
 const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const appwriteDatabaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 

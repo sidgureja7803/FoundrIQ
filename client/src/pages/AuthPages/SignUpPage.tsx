@@ -56,7 +56,7 @@ const SignUpPage: React.FC = () => {
 
   const handleGoogleSignUp = async () => {
     try {
-      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1';
       const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
       const successUrl = `${window.location.origin}/my-ideas`;
       const failureUrl = `${window.location.origin}/sign-up?error=oauth-failed`;
@@ -69,7 +69,7 @@ const SignUpPage: React.FC = () => {
 
   const handleGithubSignUp = async () => {
     try {
-      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1';
       const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
       const successUrl = `${window.location.origin}/my-ideas`;
       const failureUrl = `${window.location.origin}/sign-up?error=oauth-failed`;

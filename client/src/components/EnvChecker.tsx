@@ -11,7 +11,7 @@ const EnvChecker: React.FC = () => {
   const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
   const databaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 
-  const isEndpointCorrect = endpoint === 'https://cloud.appwrite.io/v1';
+  const isEndpointCorrect = endpoint === 'https://nyc.cloud.appwrite.io/v1';
   const hasProjectId = !!projectId;
   const hasDatabaseId = !!databaseId;
 

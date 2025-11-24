@@ -41,7 +41,7 @@ const SignInPage: React.FC = () => {
     // This will redirect to Appwrite OAuth endpoint
     try {
       // Using Appwrite OAuth
-      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1';
       const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
       const successUrl = `${window.location.origin}/my-ideas`;
       const failureUrl = `${window.location.origin}/sign-in?error=oauth-failed`;
@@ -55,7 +55,7 @@ const SignInPage: React.FC = () => {
   const handleGithubSignIn = async () => {
     // Implement GitHub OAuth
     try {
-      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1';
       const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
       const successUrl = `${window.location.origin}/my-ideas`;
       const failureUrl = `${window.location.origin}/sign-in?error=oauth-failed`;
