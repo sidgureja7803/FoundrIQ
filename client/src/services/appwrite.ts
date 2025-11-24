@@ -3,9 +3,21 @@ import { Client, Account, Databases, ID, Query, Storage } from 'appwrite';
 // Initialize Appwrite
 const client = new Client();
 
+const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
+const appwriteDatabaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+
+if (!appwriteProjectId) {
+  console.error('VITE_APPWRITE_PROJECT_ID is not set in environment variables');
+}
+
+if (!appwriteDatabaseId) {
+  console.error('VITE_APPWRITE_DATABASE_ID is not set in environment variables');
+}
+
 client
-  .setEndpoint('https://cloud.appwrite.io/v1')
-  .setProject('testProject') // Using a generic project ID for now
+  .setEndpoint(appwriteEndpoint)
+  .setProject(appwriteProjectId)
 
 // Export initialized instances
 export const account = new Account(client);
@@ -19,7 +31,7 @@ export const COLLECTIONS = {
 };
 
 // Database ID
-export const DATABASE_ID = 'testDatabase';
+export const DATABASE_ID = appwriteDatabaseId || 'default';
 
 // User authentication
 export const appwriteAuth = {

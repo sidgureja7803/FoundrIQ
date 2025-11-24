@@ -13,6 +13,7 @@ import IdeaDetailsPage from './pages/IdeaDetailsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
@@ -28,9 +29,9 @@ const App: React.FC = () => {
           <Route path="/privacy" element={<PrivacyPage />} />
           
           {/* Protected routes */}
-          <Route path="/my-ideas" element={<MyIdeasPage />} />
-          <Route path="/validate-idea" element={<IdeaSubmissionPage />} />
-          <Route path="/idea/:ideaId" element={<IdeaDetailsPage />} />
+          <Route path="/my-ideas" element={<ProtectedRoute><MyIdeasPage /></ProtectedRoute>} />
+          <Route path="/validate-idea" element={<ProtectedRoute><IdeaSubmissionPage /></ProtectedRoute>} />
+          <Route path="/idea/:ideaId" element={<ProtectedRoute><IdeaDetailsPage /></ProtectedRoute>} />
           
           {/* 404 Not found */}
           <Route path="*" element={<NotFoundPage />} />

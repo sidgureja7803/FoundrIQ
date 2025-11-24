@@ -17,6 +17,10 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@ibm-cloud/watsonx-ai": "^1.7.4",
@@ -43,6 +47,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.11"
   }
 }

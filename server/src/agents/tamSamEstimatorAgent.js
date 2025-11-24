@@ -58,7 +58,10 @@ class TamSamEstimatorAgent {
 
         try {
             const searchQuery = `${ideaData.description} TAM SAM market size revenue industry report`;
-            const results = await this.tavilyClient.search(searchQuery, { maxResults: 5 });
+            const results = await this.tavilyClient.search(searchQuery, { 
+                maxResults: 5,
+                agentType: 'tamSamEstimator'
+            });
 
             return {
                 enabled: true,

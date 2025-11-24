@@ -58,7 +58,10 @@ class CompetitorScannerAgent {
 
         try {
             const searchQuery = `${ideaData.description} competitors startups companies market players`;
-            const results = await this.tavilyClient.search(searchQuery, { maxResults: 8 });
+            const results = await this.tavilyClient.search(searchQuery, { 
+                maxResults: 8,
+                agentType: 'competitorScanner'
+            });
 
             return {
                 enabled: true,

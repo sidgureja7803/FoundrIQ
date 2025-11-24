@@ -59,7 +59,10 @@ class StrategyRecommenderAgent {
 
         try {
             const searchQuery = `${ideaData.description} go-to-market strategy pricing marketing channels`;
-            const results = await this.tavilyClient.search(searchQuery, { maxResults: 5 });
+            const results = await this.tavilyClient.search(searchQuery, { 
+                maxResults: 5,
+                agentType: 'strategyRecommender'
+            });
 
             return {
                 enabled: true,

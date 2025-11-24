@@ -4,12 +4,15 @@
  */
 
 import express from 'express';
-import { refineIdea, getRefinementStatus } from '../controllers/ideaRefinerController.js';
+import { refineIdea, getRefinementStatus, generateQuestions } from '../controllers/ideaRefinerController.js';
 
 const router = express.Router();
 
 // Health check endpoint
 router.get('/status', getRefinementStatus);
+
+// Generate follow-up questions
+router.post('/questions', generateQuestions);
 
 // Main idea refinement endpoint
 router.post('/refine', refineIdea);

@@ -59,7 +59,10 @@ class MarketAnalystAgent {
 
         try {
             const searchQuery = `${ideaData.description} market size growth trends 2024`;
-            const results = await this.tavilyClient.search(searchQuery, { maxResults: 5 });
+            const results = await this.tavilyClient.search(searchQuery, { 
+                maxResults: 5,
+                agentType: 'marketAnalyst'
+            });
 
             return {
                 enabled: true,

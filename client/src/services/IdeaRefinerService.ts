@@ -24,6 +24,11 @@ export interface IdeaRefinementResult {
   complexity: 'low' | 'medium' | 'high';
 }
 
+export interface QuestionAnswer {
+  question: string;
+  answer: string;
+}
+
 export interface IdeaRefinementError {
   error: string;
   message?: string;
@@ -33,12 +38,28 @@ export interface IdeaRefinementError {
 
 class IdeaRefinerService {
   /**
+   * Generate follow-up questions
+   */
+  async generateQuestions(rawIdea: string): Promise<string[]> {
+    try {
+        const response = await api.post('/refiner/questions', {
+            rawIdea: rawIdea.trim()
+        });
+        return response.data.questions;
+    } catch (error: any) {
+        console.error('Error generating questions:', error);
+        throw new Error('Failed to generate questions');
+    }
+  }
+
+  /**
    * Refine a raw startup idea into structured format
    */
-  async refineIdea(rawIdea: string): Promise<IdeaRefinementResult> {
+  async refineIdea(rawIdea: string, answers?: QuestionAnswer[]): Promise<IdeaRefinementResult> {
     try {
       const response = await api.post('/refiner/refine', {
-        rawIdea: rawIdea.trim()
+        rawIdea: rawIdea.trim(),
+        answers
       });
 
       return response.data;

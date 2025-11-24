@@ -59,7 +59,10 @@ class FeasibilityEvaluatorAgent {
 
         try {
             const searchQuery = `${ideaData.description} technical requirements costs implementation challenges`;
-            const results = await this.tavilyClient.search(searchQuery, { maxResults: 5 });
+            const results = await this.tavilyClient.search(searchQuery, { 
+                maxResults: 5,
+                agentType: 'feasibilityEvaluator'
+            });
 
             return {
                 enabled: true,
