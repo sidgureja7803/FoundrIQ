@@ -42,22 +42,13 @@ const SimpleHeader: React.FC = () => {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
-              to="/"
-              className={`${isActive('/')
+              to="/gallery"
+              className={`${isActive('/gallery')
                   ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
                 } transition-colors duration-200 font-medium`}
             >
-              Home
-            </Link>
-            <Link
-              to="/validate-idea"
-              className={`${isActive('/validate-idea')
-                  ? 'text-primary-400'
-                  : 'text-dark-300 hover:text-white'
-                } transition-colors duration-200 font-medium`}
-            >
-              Validate Idea
+              Public Gallery
             </Link>
           </nav>
 

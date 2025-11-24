@@ -74,23 +74,36 @@ const Header: React.FC = () => {
             >
               Home
             </Link>
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/validate-idea"
+                  className={`${isActive('/validate-idea')
+                      ? 'text-primary-400'
+                      : 'text-dark-300 hover:text-white'
+                    } transition-colors duration-200 font-medium`}
+                >
+                  Validate Idea
+                </Link>
+                <Link
+                  to="/my-ideas"
+                  className={`${isActive('/my-ideas')
+                      ? 'text-primary-400'
+                      : 'text-dark-300 hover:text-white'
+                    } transition-colors duration-200 font-medium`}
+                >
+                  My Ideas
+                </Link>
+              </>
+            )}
             <Link
-              to="/submit"
-              className={`${isActive('/submit')
+              to="/gallery"
+              className={`${isActive('/gallery')
                   ? 'text-primary-400'
                   : 'text-dark-300 hover:text-white'
                 } transition-colors duration-200 font-medium`}
             >
-              Validate Idea
-            </Link>
-            <Link
-              to="/dashboard"
-              className={`${isActive('/dashboard')
-                  ? 'text-primary-400'
-                  : 'text-dark-300 hover:text-white'
-                } transition-colors duration-200 font-medium`}
-            >
-              Dashboard
+              Gallery
             </Link>
           </nav>
 
