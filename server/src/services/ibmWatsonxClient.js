@@ -1,146 +1,208 @@
-import { WatsonXAI } from '@ibm-cloud/watsonx-ai';
+/**
+ * IBM Watsonx Client with IAM Token Authentication + Perplexity Backup
+ * Uses IBM Granite AI for text generation with automatic fallback to Perplexity
+ */
+import fetch from 'node-fetch';
 
 class IbmWatsonxClient {
   constructor() {
-    this.disabled = false;
-
-    // Map custom env vars to SDK-expected ones when possible
-    if (process.env.IBM_WATSONX_API_KEY && !process.env.WATSONX_AI_APIKEY) {
-      process.env.WATSONX_AI_APIKEY = process.env.IBM_WATSONX_API_KEY;
+    // IBM Configuration
+    this.ibmApiKey = process.env.IBM_WATSONX_API_KEY;
+    this.ibmUrl = process.env.IBM_WATSONX_URL || 'https://us-south.ml.cloud.ibm.com';
+    this.ibmProjectId = process.env.IBM_WATSONX_PROJECT_ID;
+    this.modelId = process.env.GRANITE_MODEL_ID || 'ibm/granite-3-3-8b-instruct';
+    
+    // Perplexity Configuration (Backup)
+    this.perplexityApiKey = process.env.PERPLEXITY_API_KEY;
+    this.perplexityUrl = 'https://api.perplexity.ai/chat/completions';
+    this.perplexityModel = 'llama-3.1-sonar-small-128k-online';
+    
+    // Token caching for IBM
+    this.cachedToken = null;
+    this.tokenExpiry = 0;
+    
+    // Check IBM availability
+    this.ibmDisabled = !this.ibmApiKey || !this.ibmProjectId;
+    
+    if (this.ibmDisabled) {
+      console.warn('[IBM Watsonx] ⚠️  API key or Project ID missing - using Perplexity as primary');
+    } else {
+      console.log('[IBM Watsonx] ✅ Configured with IAM authentication');
     }
-
-    const serviceUrl = process.env.IBM_WATSONX_URL || process.env.WATSONX_AI_SERVICE_URL;
-    const version = process.env.WATSONX_API_VERSION || '2024-05-31';
-
-    if (!serviceUrl) {
-      console.warn('[watsonx] IBM_WATSONX_URL / WATSONX_AI_SERVICE_URL not set. watsonx client is disabled.');
-      this.disabled = true;
-      return;
+    
+    if (!this.perplexityApiKey) {
+      console.warn('[Perplexity] ⚠️  API key missing - no backup available');
+    } else {
+      console.log('[Perplexity] ✅ Configured as backup');
     }
-
-    this.projectId = process.env.IBM_WATSONX_PROJECT_ID || process.env.WATSONX_AI_PROJECT_ID;
-    this.spaceId = this.projectId ? undefined : (process.env.IBM_WATSONX_SPACE_ID || process.env.WATSONX_AI_SPACE_ID);
-
-    this.modelId = process.env.GRANITE_MODEL_ID || 'ibm/granite-13b-instruct-v2';
-    this.embeddingModelId = process.env.GRANITE_EMBEDDING_MODEL_ID || this.modelId;
-    this.classificationModelId = process.env.GRANITE_CLASSIFICATION_MODEL_ID || this.modelId;
-
-    this.maxRetries = parseInt(process.env.WATSONX_MAX_RETRIES || '2', 10);
-    this.timeoutMs = parseInt(process.env.WATSONX_TIMEOUT_MS || '30000', 10);
-
-    this.client = WatsonXAI.newInstance({
-      version,
-      serviceUrl,
-    });
   }
 
-  async generateText(prompt, opts = {}) {
-    if (this.disabled) {
-      return 'Model temporarily unavailable — please try again later.';
-    }
+  /**
+   * Get IAM access token for IBM Watsonx
+   */
+  async getIamToken() {
+    const url = 'https://iam.cloud.ibm.com/identity/token';
+    const body = `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(this.ibmApiKey)}`;
 
-    const maxRetries = opts.maxRetries != null ? opts.maxRetries : this.maxRetries;
-    let lastError = null;
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+        body,
+      });
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        const { input, modelId, parameters } = this._buildTextParams(prompt, opts);
-
-        const params = {
-          input,
-          modelId,
-          projectId: this.projectId,
-          spaceId: this.spaceId,
-          parameters,
-        };
-
-        const res = await this.client.generateText(params);
-        const text = res.result?.results?.[0]?.generated_text || '';
-        return text || 'Model response was empty.';
-      } catch (err) {
-        lastError = err;
-        console.error(`[watsonx] generateText attempt ${attempt + 1} failed:`, err.message || err);
-
-        if (attempt >= maxRetries) {
-          console.error('[watsonx] Max retries reached, returning safe fallback.');
-          return 'Model temporarily unavailable — please try again later.';
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Failed to get IAM token: ${text}`);
       }
-    }
 
-    return 'Model temporarily unavailable — please try again later.';
+      const data = await res.json();
+      const now = Math.floor(Date.now() / 1000);
+
+      this.cachedToken = data.access_token;
+      this.tokenExpiry = now + data.expires_in; // usually 3600 seconds
+
+      console.log('[IBM Watsonx] ✅ IAM token refreshed');
+      return this.cachedToken;
+    } catch (error) {
+      console.error('[IBM Watsonx] ❌ Failed to get IAM token:', error.message);
+      throw error;
+    }
   }
 
-  _buildTextParams(prompt, opts) {
-    let input;
+  /**
+   * Get a valid token (auto-refresh if expired)
+   */
+  async getValidToken() {
+    const now = Math.floor(Date.now() / 1000);
+    if (!this.cachedToken || now > this.tokenExpiry - 60) {
+      return await this.getIamToken();
+    }
+    return this.cachedToken;
+  }
+
+  /**
+   * Call IBM Granite using IAM token
+   */
+  async callIbmGranite(messages) {
+    const accessToken = await this.getValidToken();
+    const url = `${this.ibmUrl}/ml/v1/text/chat?version=2023-05-29`;
+
+    const body = {
+      messages,
+      project_id: this.ibmProjectId,
+      model_id: this.modelId,
+      max_tokens: 2000,
+      temperature: 0.3,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      stop: [],
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`IBM Granite request failed: ${text}`);
+    }
+
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || data.results?.[0]?.generated_text || '';
+  }
+
+  /**
+   * Call Perplexity API as backup
+   */
+  async callPerplexity(messages) {
+    const res = await fetch(this.perplexityUrl, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.perplexityApiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.perplexityModel,
+        messages,
+        temperature: 0.3,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Perplexity request failed: ${text}`);
+    }
+
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+
+  /**
+   * Main text generation with automatic fallback
+   */
+  async generateText(prompt, opts = {}) {
+    // Build messages from prompt
+    let messages;
     if (typeof prompt === 'string') {
-      input = prompt;
+      messages = [{ role: 'user', content: prompt }];
     } else if (prompt && typeof prompt === 'object') {
       const systemPrompt = prompt.systemPrompt || '';
       const userPrompt = prompt.userPrompt || '';
-      input = systemPrompt ? `${systemPrompt}\n\nUser:\n${userPrompt}` : userPrompt;
+      messages = [];
+      if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+      if (userPrompt) messages.push({ role: 'user', content: userPrompt });
     } else {
       throw new Error('Invalid prompt type for generateText');
     }
 
-    const modelId = opts.modelId || this.modelId;
-    const parameters = {
-      max_new_tokens: opts.maxTokens || opts.max_new_tokens || 1024,
-      temperature: opts.temperature != null ? opts.temperature : 0.3,
-      top_p: opts.top_p != null ? opts.top_p : 0.9,
-      time_limit: this.timeoutMs,
-    };
-
-    return { input, modelId, parameters };
-  }
-
-  async generateStructuredOutput(systemPrompt, userInput, options = {}, _complexity) {
-    const text = await this.generateText({ systemPrompt, userPrompt: userInput }, options);
-    return text;
-  }
-
-  async createEmbedding(text) {
-    if (this.disabled) {
-      return [];
+    // Try IBM first if available
+    if (!this.ibmDisabled) {
+      try {
+        console.log('[IBM Watsonx] 🚀 Calling IBM Granite...');
+        const response = await this.callIbmGranite(messages);
+        console.log('[IBM Watsonx] ✅ Success');
+        return response;
+      } catch (error) {
+        console.error('[IBM Watsonx] ❌ Error:', error.message);
+        console.log('[IBM Watsonx] 🔄 Falling back to Perplexity...');
+      }
     }
 
-    const inputs = Array.isArray(text) ? text : [text];
-
-    try {
-      const params = {
-        inputs,
-        modelId: this.embeddingModelId,
-        projectId: this.projectId,
-        spaceId: this.spaceId,
-      };
-
-      const res = await this.client.embedText(params);
-      const vectors = res.result?.results || [];
-      return Array.isArray(text) ? vectors : (vectors[0] || []);
-    } catch (err) {
-      console.error('[watsonx] createEmbedding error:', err.message || err);
-      return Array.isArray(text) ? [] : [];
+    // Fallback to Perplexity
+    if (this.perplexityApiKey) {
+      try {
+        console.log('[Perplexity] 🚀 Calling Perplexity...');
+        const response = await this.callPerplexity(messages);
+        console.log('[Perplexity] ✅ Success');
+        return response;
+      } catch (error) {
+        console.error('[Perplexity] ❌ Error:', error.message);
+      }
     }
+
+    // Both failed
+    throw new Error('All AI providers failed. Please check your API keys.');
   }
 
-  async classify(text, opts = {}) {
-    const labels = opts.labels || [];
-    const systemPrompt = labels.length
-      ? `Classify the given text into one of the following labels: ${labels.join(', ')}. Respond with a single label name and an optional confidence score.`
-      : 'Classify the given text and explain your reasoning. Return a short label and a brief rationale.';
 
-    const response = await this.generateText({ systemPrompt, userPrompt: text }, opts);
-
-    return {
-      raw: response,
-    };
-  }
-
-  async promptTuneIfConfigured(_dataset) {
-    console.log('[watsonx] promptTuneIfConfigured called, but no tuning is configured.');
-    return { configured: false };
+  /**
+   * Generate structured output (alias for generateText)
+   */
+  async generateStructuredOutput(systemPrompt, userInput, options = {}) {
+    return await this.generateText({ systemPrompt, userPrompt: userInput }, options);
   }
 }
 
