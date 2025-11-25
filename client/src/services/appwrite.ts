@@ -180,8 +180,12 @@ export const ideaService = {
           Query.equal('userId', userId)
         ]
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting user ideas:', error);
+      if (error.code === 404 && error.message?.includes('Collection')) {
+        console.error('❌ Collection "ideas" not found in database "' + DATABASE_ID + '"');
+        console.error('👉 Create the collection in Appwrite Console: https://nyc.cloud.appwrite.io/console');
+      }
       throw error;
     }
   },
@@ -196,8 +200,12 @@ export const ideaService = {
           Query.equal('isPublic', true)
         ]
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting public ideas:', error);
+      if (error.code === 404 && error.message?.includes('Collection')) {
+        console.error('❌ Collection "ideas" not found in database "' + DATABASE_ID + '"');
+        console.error('👉 Create the collection in Appwrite Console: https://nyc.cloud.appwrite.io/console');
+      }
       throw error;
     }
   },
