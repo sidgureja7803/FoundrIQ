@@ -68,7 +68,16 @@ OUTPUT_JSON:
 
   } catch (error) {
     console.error('Error generating questions:', error);
-    res.status(500).json({ error: 'Failed to generate questions', message: error.message });
+    console.warn('⚠️  Returning fallback questions due to AI error');
+    
+    // Return fallback questions instead of 500 error
+    return res.json({ 
+      questions: [
+        "What problem does this solve?", 
+        "Who is your target customer?", 
+        "How do you plan to make money?"
+      ]
+    });
   }
 };
 

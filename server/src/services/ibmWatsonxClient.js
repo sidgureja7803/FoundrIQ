@@ -15,7 +15,7 @@ class IbmWatsonxClient {
     // Perplexity Configuration (Backup)
     this.perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     this.perplexityUrl = 'https://api.perplexity.ai/chat/completions';
-    this.perplexityModel = 'llama-3.1-sonar-small-128k-online';
+    this.perplexityModel = 'sonar-pro';
     
     // Token caching for IBM
     this.cachedToken = null;
@@ -193,8 +193,10 @@ class IbmWatsonxClient {
       }
     }
 
-    // Both failed
-    throw new Error('All AI providers failed. Please check your API keys.');
+    // Both failed - return friendly error message
+    console.error('[AI] ❌ All AI providers unavailable');
+    console.error('[AI] 💡 Add IBM_WATSONX_API_KEY or PERPLEXITY_API_KEY to .env');
+    throw new Error('AI service unavailable. Please configure API keys.');
   }
 
 
