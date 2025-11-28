@@ -21,20 +21,8 @@ class IbmWatsonxClient {
     this.cachedToken = null;
     this.tokenExpiry = 0;
     
-    // Check IBM availability
+    // Check IBM availability (logging handled in index.js)
     this.ibmDisabled = !this.ibmApiKey || !this.ibmProjectId;
-    
-    if (this.ibmDisabled) {
-      console.warn('[IBM Watsonx] ⚠️  API key or Project ID missing - using Perplexity as primary');
-    } else {
-      console.log('[IBM Watsonx] ✅ Configured with IAM authentication');
-    }
-    
-    if (!this.perplexityApiKey) {
-      console.warn('[Perplexity] ⚠️  API key missing - no backup available');
-    } else {
-      console.log('[Perplexity] ✅ Configured as backup');
-    }
   }
 
   /**
@@ -65,7 +53,6 @@ class IbmWatsonxClient {
       this.cachedToken = data.access_token;
       this.tokenExpiry = now + data.expires_in; // usually 3600 seconds
 
-      console.log('[IBM Watsonx] ✅ IAM token refreshed');
       return this.cachedToken;
     } catch (error) {
       console.error('[IBM Watsonx] ❌ Failed to get IAM token:', error.message);

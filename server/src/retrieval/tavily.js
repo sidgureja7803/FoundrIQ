@@ -3,11 +3,20 @@ import Bottleneck from 'bottleneck';
 import { SearchTool } from './SearchTool.js';
 import { getDomainsForAgent } from '../config/tavilyDomains.js';
 
+// Singleton instance
+let instance = null;
+let isInitialized = false;
+
 /**
- * Tavily search adapter with feature flag support
+ * Tavily search adapter with feature flag support (Singleton)
  */
 export class TavilySearchTool extends SearchTool {
   constructor() {
+    // Return existing instance if already created
+    if (instance) {
+      return instance;
+    }
+
     super();
 
     // Enable Tavily by default (can be disabled with ENABLE_TAVILY=false)
@@ -15,9 +24,10 @@ export class TavilySearchTool extends SearchTool {
 
     if (this.enabled) {
       if (!process.env.TAVILY_API_KEY) {
-        console.warn('[Tavily] TAVILY_API_KEY is not set. Disabling Tavily.');
+        // API key not set, disable Tavily
         this.enabled = false;
-        return;
+        instance = this;
+        return instance;
       }
 
       // Initialize Tavily search tool
@@ -34,10 +44,12 @@ export class TavilySearchTool extends SearchTool {
         maxConcurrent: 1
       });
 
-      console.log('[Tavily] Initialized successfully');
+      isInitialized = true;
     } else {
-      console.log('[Tavily] Disabled via feature flag (ENABLE_TAVILY=false)');
+      isInitialized = true;
     }
+
+    instance = this;
   }
 
   /**

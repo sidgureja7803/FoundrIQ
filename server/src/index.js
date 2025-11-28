@@ -1,12 +1,26 @@
-import express from 'express';
-import cors from 'cors';
+// ============================================
+// IMPORTANT: Load .env FIRST before any other imports!
+// ============================================
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load .env file BEFORE importing anything else
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.resolve(__dirname, '../.env') });
+}
+
+// Now import everything else AFTER .env is loaded
+import express from 'express';
+import cors from 'cors';
 import http from 'http';
 import socketManager from './utils/socketManager.js';
 
-// Import routes
+// Import routes (these will now have access to env vars)
 import ideaRoutesV2 from './routes/ideaRoutes.js';
 import streamingRoutes from './routes/streamingRoutes.js';
 import copilotRoutes from './routes/copilotRoutes.js';
@@ -17,19 +31,6 @@ import ideaRefinerRoutes from './routes/ideaRefinerRoutes.js';
 import evidenceExtractorRoutes from './routes/evidenceExtractorRoutes.js';
 import researchRoutes from './routes/researchRoutes.js';
 import aiRoutes from './routes/ai.js';
-
-// Load environment variables
-import path from 'path';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Only load .env file in development
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: path.resolve(__dirname, '../.env') });
-  console.log('Environment variables loaded from:', path.resolve(__dirname, '../.env'));
-} else {
-  console.log('Production mode: Using environment variables from hosting platform');
-}
 
 // Check for required environment variables
 const baseRequiredVars = [
@@ -52,17 +53,8 @@ const missingVars = requiredVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
   console.error('❌ Missing required environment variables:', missingVars.join(', '));
   console.error('Please add them to your .env file');
-} else {
-  console.log('✅ All required environment variables are present');
+  process.exit(1);
 }
-
-// Log optional variables status
-const optionalVars = ['APPWRITE_REPORTS_BUCKET_ID', 'APPWRITE_DOCUMENTS_BUCKET_ID', 'TAVILY_API_KEY', 'PERPLEXITY_API_KEY'];
-optionalVars.forEach(varName => {
-  if (!process.env[varName]) {
-    console.warn(`⚠️ Optional variable ${varName} is not set`);
-  }
-});
 
 const app = express();
 const server = http.createServer(app);
@@ -134,19 +126,14 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Only start server if all required variables are present
-if (missingVars.length === 0) {
-  server.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🔌 WebSocket server initialized for real-time events`);
-    console.log(`🤖 IBM Granite (Watson) AI ready for startup validation`);
-    console.log(`🔍 Tavily search ${process.env.TAVILY_API_KEY ? 'enabled' : 'disabled'} for market research`);
-    console.log(`📝 Using Appwrite for authentication and database (${process.env.APPWRITE_DATABASE_ID})`);
-  });
-} else {
-  console.error('Server not started due to missing environment variables');
-  process.exit(1);
-}
+// Start server
+server.listen(PORT, () => {
+  console.log('\n🚀 FoundrIQ Server Started');
+  console.log(`📡 Server: http://localhost:${PORT}`);
+  console.log(`💚 Health: http://localhost:${PORT}/health`);
+  console.log(`🤖 AI: IBM Granite (Watsonx)`);
+  console.log(`🔍 Search: ${process.env.TAVILY_API_KEY ? '✓ Tavily' : '✗ Tavily (API key missing)'}`);
+  console.log(`📝 Auth: Appwrite (${process.env.APPWRITE_DATABASE_ID.substring(0, 8)}...)\n`);
+});
 
 export default app;

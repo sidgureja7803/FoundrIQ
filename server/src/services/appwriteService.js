@@ -37,29 +37,11 @@ class AppwriteService {
   constructor() {
     this.enabled = true;
 
-    if (!process.env.APPWRITE_API_KEY) {
-      console.error("APPWRITE_API_KEY is not defined in environment variables");
+    // Silently check for required variables (logging handled in index.js)
+    if (!process.env.APPWRITE_API_KEY || 
+        !process.env.APPWRITE_PROJECT_ID || 
+        !process.env.APPWRITE_DATABASE_ID) {
       this.enabled = false;
-    }
-    if (!process.env.APPWRITE_PROJECT_ID) {
-      console.error("APPWRITE_PROJECT_ID is not defined in environment variables");
-      this.enabled = false;
-    }
-    if (!process.env.APPWRITE_DATABASE_ID) {
-      console.error("APPWRITE_DATABASE_ID is not defined in environment variables");
-      this.enabled = false;
-    }
-    if (!process.env.APPWRITE_REPORTS_BUCKET_ID) {
-      console.warn("APPWRITE_REPORTS_BUCKET_ID is not defined in environment variables");
-    }
-    if (!process.env.APPWRITE_DOCUMENTS_BUCKET_ID) {
-      console.warn("APPWRITE_DOCUMENTS_BUCKET_ID is not defined in environment variables");
-    }
-
-    if (this.enabled) {
-      console.log('[AppwriteService] Initialized successfully');
-    } else {
-      console.warn('[AppwriteService] Service disabled - missing required configuration');
     }
   }
 

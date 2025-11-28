@@ -13,9 +13,6 @@ class StartupValidationService {
         this.ibmClient = ibmWatsonxClient;
         this.tavilyClient = new TavilySearchTool();
         this.tavilyEnabled = this.tavilyClient.isEnabled();
-
-        console.log('[ValidationService] Initialized with IBM Granite + Tavily');
-        console.log(`[ValidationService] Using 5 specialized agents`);
     }
 
     /**
