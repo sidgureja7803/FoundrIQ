@@ -1,23 +1,19 @@
 /**
- * User Menu Component
+ * User Menu Component for Appwrite
  * Displays current user information and sign-out option
  */
 
-import React, { useState, useRef, useEffect as ReactUseEffect } from 'react';
-import { 
-  useUser, 
-  useClerk
-} from '@clerk/clerk-react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, 
-  User, 
+  User as UserIcon, 
   LogOut, 
   Settings, 
   CreditCard 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 interface UserMenuProps {
   className?: string;
@@ -28,37 +24,13 @@ const UserMenu: React.FC<UserMenuProps> = ({
   className = '',
   showCredits = true
 }) => {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [creditBalance, setCreditBalance] = useState<number>(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fetch credit balance
-  ReactUseEffect(() => {
-    const fetchCredits = async () => {
-      if (user?.id) {
-        try {
-          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-          const response = await axios.get(`${apiUrl}/api/credits/balance`, {
-            params: { userId: user.id }
-          });
-          setCreditBalance(response.data.balance || 0);
-        } catch (error) {
-          console.error('Error fetching credits:', error);
-        }
-      }
-    };
-
-    fetchCredits();
-    // Refresh credits every 30 seconds
-    const interval = setInterval(fetchCredits, 30000);
-    return () => clearInterval(interval);
-  }, [user?.id]);
-
   // Close menu when clicking outside
-  ReactUseEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -70,30 +42,33 @@ const UserMenu: React.FC<UserMenuProps> = ({
   }, [menuRef]);
 
   // Format user's name
-  let userName = 'User';
-  if (user?.firstName) {
-    userName = user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName;
-  } else if (user?.emailAddresses?.[0]?.emailAddress) {
-    userName = user.emailAddresses[0].emailAddress.split('@')[0];
-  }
-
-  // Truncate long names
+  const userName = user?.name || user?.email?.split('@')[0] || 'User';
   const displayName = userName.length > 15 ? `${userName.substring(0, 12)}...` : userName;
 
-  const handleSignOut = () => {
-    signOut(() => navigate('/sign-in'));
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      navigate('/sign-in');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const getInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    } else if (user?.firstName) {
-      return user.firstName[0].toUpperCase();
-    } else if (user?.emailAddresses?.[0]?.emailAddress) {
-      return user.emailAddresses[0].emailAddress[0].toUpperCase();
+    if (user?.name) {
+      const nameParts = user.name.split(' ');
+      if (nameParts.length >= 2) {
+        return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+      }
+      return user.name.substring(0, 2).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
     }
     return 'U';
   };
+
+  if (!user) return null;
 
   return (
     <div className={`relative ${className}`} ref={menuRef}>
@@ -103,18 +78,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
         className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-700/50 transition-all duration-200"
       >
         {/* User Avatar */}
-        <div className="relative">
-          {user?.imageUrl ? (
-            <img 
-              src={user.imageUrl} 
-              alt={userName}
-              className="w-9 h-9 rounded-full object-cover border-2 border-primary-500/30"
-            />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center text-white font-semibold text-sm border-2 border-primary-500/30">
-              {getInitials()}
-            </div>
-          )}
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center text-white font-semibold text-sm border-2 border-primary-500/30">
+          {getInitials()}
         </div>
 
         {/* User Info */}
@@ -124,7 +89,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
           </span>
           {showCredits && (
             <span className="text-xs text-dark-300">
-              {creditBalance} {creditBalance === 1 ? 'credit' : 'credits'}
+              View Credits
             </span>
           )}
         </div>
@@ -149,35 +114,16 @@ const UserMenu: React.FC<UserMenuProps> = ({
             {/* User Info Section */}
             <div className="px-4 py-4 border-b border-dark-700 bg-gradient-to-br from-primary-500/10 to-accent-cyan/10">
               <div className="flex items-center gap-3 mb-3">
-                {user?.imageUrl ? (
-                  <img 
-                    src={user.imageUrl} 
-                    alt={userName}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-primary-500/50"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center text-white font-bold text-lg border-2 border-primary-500/50">
-                    {getInitials()}
-                  </div>
-                )}
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center text-white font-bold text-lg border-2 border-primary-500/50">
+                  {getInitials()}
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white truncate">{userName}</p>
                   <p className="text-xs text-dark-300 truncate">
-                    {user?.primaryEmailAddress?.emailAddress}
+                    {user.email}
                   </p>
                 </div>
               </div>
-              
-              {/* Credits Display */}
-              {showCredits && (
-                <div className="flex items-center justify-between px-3 py-2 bg-dark-900/50 rounded-lg border border-primary-500/20">
-                  <div className="flex items-center gap-2">
-                    <CreditCard size={16} className="text-primary-400" />
-                    <span className="text-sm font-medium text-white">Credits</span>
-                  </div>
-                  <span className="text-sm font-bold text-primary-400">{creditBalance}</span>
-                </div>
-              )}
             </div>
 
             <div className="py-2">
@@ -189,22 +135,9 @@ const UserMenu: React.FC<UserMenuProps> = ({
                 }}
                 className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-dark-200 hover:bg-dark-700 hover:text-white transition-colors"
               >
-                <User size={18} />
+                <UserIcon size={18} />
                 <span>My Ideas</span>
               </button>
-
-              {showCredits && (
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate('/credits');
-                  }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-dark-200 hover:bg-dark-700 hover:text-white transition-colors"
-                >
-                  <CreditCard size={18} />
-                  <span>Buy Credits</span>
-                </button>
-              )}
 
               <button
                 onClick={() => {

@@ -5,7 +5,7 @@ import { ArrowRight, Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { ideaRefinerService, QuestionAnswer } from '../services/IdeaRefinerService';
 import { ideaService } from '../services/appwrite';
 import { useAuth } from '../context/AuthContext';
-import SimpleHeader from '../components/layout/SimpleHeader';
+import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
 const IdeaSubmissionPage: React.FC = () => {
@@ -99,7 +99,7 @@ const IdeaSubmissionPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-      <SimpleHeader />
+      <Header />
       
       <main className="flex-grow container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto">

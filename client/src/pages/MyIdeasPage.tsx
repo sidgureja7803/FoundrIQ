@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ideaService } from '../services/appwrite';
 import { Lightbulb, CheckCircle, Clock, TrendingUp, Plus, Bell, User } from 'lucide-react';
-import SimpleHeader from '../components/layout/SimpleHeader';
+import SimpleHeader from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
 interface Idea {

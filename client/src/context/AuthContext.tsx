@@ -45,21 +45,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Clear error
   const clearError = () => setError(null);
 
-  // Check if user is logged in on mount
+  // Check if user is logged in on mount AND on visibility change
   useEffect(() => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
+        console.log('🔍 Checking authentication status...');
         const currentUser = await appwriteAuth.getCurrentUser();
+        
         if (currentUser) {
+          console.log('✅ User is authenticated:', currentUser.email);
           setUser(currentUser as User);
           setIsAuthenticated(true);
         } else {
+          console.log('❌ No user session found');
           setUser(null);
           setIsAuthenticated(false);
         }
       } catch (err) {
-        console.error('Authentication check failed:', err);
+        console.error('❌ Authentication check failed:', err);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -67,7 +71,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
+    // Check auth immediately
     checkAuth();
+
+    // Also check auth when tab becomes visible (in case user logged in elsewhere)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👀 Tab visible, rechecking auth...');
+        checkAuth();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Periodic auth check every 30 seconds
+    const intervalId = setInterval(() => {
+      if (!document.hidden) {
+        checkAuth();
+      }
+    }, 30000);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(intervalId);
+    };
   }, []);
 
   // Login function
@@ -76,20 +103,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       clearError();
       
-      console.log('Attempting login for:', email);
+      console.log('🔐 Attempting login for:', email);
       await appwriteAuth.login(email, password);
       
-      console.log('Login successful, fetching user data...');
+      console.log('✅ Login successful, fetching user data...');
+      
+      // Small delay to ensure session is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const currentUser = await appwriteAuth.getCurrentUser();
       
       if (currentUser) {
-        console.log('User authenticated:', currentUser.email);
+        console.log('✅ User authenticated:', currentUser.email);
         setUser(currentUser as User);
         setIsAuthenticated(true);
+        
+        // Force a re-render by updating state
+        setTimeout(() => {
+          setIsAuthenticated(true);
+        }, 0);
+        
         navigate('/my-ideas');
+      } else {
+        console.error('❌ Login succeeded but could not fetch user');
+        setError('Login succeeded but could not load user data. Please refresh the page.');
       }
     } catch (err: any) {
-      console.error('Login failed:', err);
+      console.error('❌ Login failed:', err);
       
       // Better error messages
       let errorMessage = 'Login failed. Please try again.';
@@ -118,18 +158,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       clearError();
       
+      console.log('📝 Creating account for:', email);
       await appwriteAuth.createAccount(email, password, name);
+      
+      // Small delay to ensure session is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('✅ Account created, fetching user data...');
       const currentUser = await appwriteAuth.getCurrentUser();
       
       if (currentUser) {
+        console.log('✅ User registered and authenticated:', currentUser.email);
         setUser(currentUser as User);
         setIsAuthenticated(true);
         navigate('/my-ideas');
       }
     } catch (err: any) {
-      console.error('Registration failed:', err);
+      console.error('❌ Registration failed:', err);
       setError(err?.message || 'Registration failed. Please try again.');
       setIsAuthenticated(false);
+      throw err; // Re-throw for SignUpPage to handle
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import UserMenu from '../auth/UserMenu';
 import { Brain, Lightbulb, LogIn, UserPlus, LayoutDashboard, Plus, Bell } from 'lucide-react';
 

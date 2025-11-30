@@ -18,6 +18,7 @@ const SignUpPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -27,9 +28,28 @@ const SignUpPage: React.FC = () => {
     { met: /[0-9]/.test(password), text: 'One number' },
   ];
 
+  // Helper function to check if error is a duplicate email error
+  const isDuplicateEmailError = (errorMessage: string): boolean => {
+    const duplicatePatterns = [
+      'already exists',
+      'already registered',
+      'already taken',
+      'already in use',
+      'duplicate',
+      'email_exists',
+      'user_already_exists',
+      'account exists',
+      'email is already',
+    ];
+    
+    const lowerMessage = errorMessage.toLowerCase();
+    return duplicatePatterns.some(pattern => lowerMessage.includes(pattern));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setEmailError(null);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -47,7 +67,14 @@ const SignUpPage: React.FC = () => {
         await register(email, password, name);
         navigate('/my-ideas');
       } catch (err: any) {
-        setError(err.message || 'Failed to create account. Please try again.');
+        const errorMessage = err.message || 'Failed to create account';
+        
+        // Check if it's a duplicate email error
+        if (isDuplicateEmailError(errorMessage)) {
+          setEmailError('An account with this email already exists.');
+        } else {
+          setError(errorMessage);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -112,21 +139,28 @@ const SignUpPage: React.FC = () => {
               </motion.p>
             </div>
 
-            {/* Error Message */}
+            {/* Generic Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-3 bg-red-500/20 border border-red-500/50 rounded-lg flex items-center gap-2 text-red-200"
+                className="mb-6 p-3 bg-red-500/20 border border-red-500/50 rounded-lg"
               >
-                <AlertCircle size={18} />
-                <span className="text-sm">{error}</span>
-                <button 
-                  onClick={() => setError(null)}
-                  className="ml-auto text-dark-400 hover:text-white"
-                >
-                  ✕
-                </button>
+                <div className="flex items-start gap-2">
+                  <AlertCircle size={18} className="text-red-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm text-red-200">{error}</p>
+                    <p className="text-xs text-red-300/70 mt-1">
+                      If the problem persists, please try signing up with Google or GitHub.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setError(null)}
+                    className="text-dark-400 hover:text-white flex-shrink-0"
+                  >
+                    ✕
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -233,11 +267,61 @@ const SignUpPage: React.FC = () => {
                     autoComplete="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-dark-800 border-dark-700 focus:border-primary-500 text-white"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailError(null); // Clear error when user types
+                    }}
+                    className={`pl-10 bg-dark-800 ${
+                      emailError 
+                        ? 'border-red-500 focus:border-red-500' 
+                        : 'border-dark-700 focus:border-primary-500'
+                    } text-white`}
                     placeholder="you@example.com"
                   />
                 </div>
+                
+                {/* Inline Email Error */}
+                {emailError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg"
+                  >
+                    <div className="flex items-start gap-2">
+                      <AlertCircle size={16} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 text-sm">
+                        <p className="text-amber-200 font-medium mb-1">
+                          {emailError}
+                        </p>
+                        <p className="text-amber-300/80 text-xs mb-2">
+                          You may have previously signed up with Google or GitHub using this email.
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Link 
+                            to="/sign-in"
+                            className="inline-flex items-center text-xs font-medium text-amber-300 hover:text-amber-200 underline"
+                          >
+                            Sign in instead →
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={handleGoogleSignUp}
+                            className="inline-flex items-center text-xs font-medium text-amber-300 hover:text-amber-200"
+                          >
+                            Try with Google
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleGithubSignUp}
+                            className="inline-flex items-center text-xs font-medium text-amber-300 hover:text-amber-200"
+                          >
+                            Try with GitHub
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
               <div className="space-y-2">

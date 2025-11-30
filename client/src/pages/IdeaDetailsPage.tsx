@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ideaService } from '../services/appwrite';
 import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Share2, Eye, EyeOff, Download } from 'lucide-react';
-import SimpleHeader from '../components/layout/SimpleHeader';
+import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AnalysisNavigation from '../components/analysis/AnalysisNavigation';
 import MarketAnalysisSection from '../components/analysis/MarketAnalysisSection';
@@ -108,7 +108,7 @@ const IdeaDetailsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen bg-black text-white">
-        <SimpleHeader />
+        <Header />
         <main className="flex-grow flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
         </main>
@@ -120,7 +120,7 @@ const IdeaDetailsPage: React.FC = () => {
   if (!idea) {
     return (
       <div className="flex flex-col min-h-screen bg-black text-white">
-        <SimpleHeader />
+        <Header />
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <p className="text-dark-400 mb-4">Idea not found</p>

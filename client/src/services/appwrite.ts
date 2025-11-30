@@ -102,9 +102,15 @@ export const appwriteAuth = {
   // Get current user
   getCurrentUser: async () => {
     try {
-      return await account.get();
-    } catch (error) {
-      console.error('Error getting current user:', error);
+      console.log('📥 Fetching current user from Appwrite...');
+      const user = await account.get();
+      console.log('✅ User fetched successfully:', user?.email || user?.$id);
+      return user;
+    } catch (error: any) {
+      // Only log error if it's not a "user not logged in" error
+      if (error.code !== 401) {
+        console.error('❌ Error getting current user:', error);
+      }
       return null;
     }
   },
