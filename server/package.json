@@ -1,0 +1,53 @@
+{
+  "name": "startup-buddy-backend",
+  "version": "1.0.0",
+  "description": "AI-powered startup idea validation backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "startup",
+    "ai",
+    "validation",
+    "ibm-granite",
+    "tavily"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
+    "@ibm-cloud/watsonx-ai": "^1.7.4",
+    "@langchain/community": "^0.3.49",
+    "@langchain/core": "^0.3.66",
+    "@langchain/langgraph": "^0.3.11",
+    "@langchain/openai": "^0.6.3",
+    "@mozilla/readability": "^0.5.0",
+    "@perplexity-ai/perplexity_ai": "^0.16.0",
+    "axios": "^1.11.0",
+    "bottleneck": "^2.19.5",
+    "bullmq": "^5.60.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-sse": "^1.0.0",
+    "jsdom": "^24.0.0",
+    "langchain": "^0.3.30",
+    "node-appwrite": "^20.2.1",
+    "pdf-parse": "^1.1.1",
+    "robots-parser": "^3.0.1",
+    "socket.io": "^4.8.1",
+    "tavily": "^1.0.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
