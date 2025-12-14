@@ -1,11 +1,11 @@
 # 🚀 FoundrIQ — AI-Powered Startup Validation Platform
 
 > **Validate your startup idea in minutes, not weeks.**  
-> FoundrIQ transforms raw business ideas into comprehensive, data-driven market analyses with actionable insights and strategic recommendations — powered by **IBM Granite AI** and **Tavily search**.
+> FoundrIQ transforms raw business ideas into comprehensive, data-driven market analyses with actionable insights and strategic recommendations — powered by **Perplexity AI** and **Tavily search**.
 
-## 🎯 Built for lablab.ai Hackathon
+## 🎯 Built for AssembleHack25 Hackathon
 
-**FoundrIQ** is participating in the [Agentic AI Hackathon with IBM watsonx.orchestrate](https://lablab.ai/event/agentic-ai-hackathon-ibm-watsonx-orchestrate) showcasing enterprise-grade AI agents powered by IBM Granite models for startup validation.
+**FoundrIQ** is participating in the [AI Agents Assemble](https://www.wemakedevs.org/hackathons/assemblehack25) — A global showdown where builders unite to create the next generation of intelligent agents. Assemble your skills, assemble your tools, assemble your team.
 
 ## 🧩 Overview
 
@@ -13,23 +13,23 @@
 
 - 📊 **Market Intelligence** — AI-powered market research with real-time Tavily search  
 - 🧠 **Competitive Mapping** — Deep competitor analysis with live web data  
-- 💰 **Market Sizing (TAM/SAM/SOM)** — Precise market sizing using IBM Granite AI  
-- ⚙️ **Feasibility Assessment** — Technical, operational, and financial viability scoring  
-- 🚀 **Strategic AI** — IBM Granite-powered strategic recommendations
+- 💰 **Market Sizing (TAM/SAM/SOM)** — Precise market sizing using Perplexity AI
+- ⚙️ **Feasibility Assessment** — Technical, operational, and financial viability scoring
+- 🚀 **Strategic AI** — Perplexity-powered strategic recommendations
 
 ## ⚡ Performance Metrics
 
 | Metric | Result |
 |--------|--------|
 | Average Analysis Time | **2-3 minutes** per startup idea |
-| IBM Granite Response Time | **2-4 seconds** per agent request |
+| Perplexity Response Time | **2-4 seconds** per agent request |
 | Success Rate | **99%+ task completion |
 | Concurrent Pipelines | **5 agents** working in parallel |
 | Market Intelligence | **Real-time via Tavily API** |
 
 ## 🧠 Multi-Agent AI Architecture
 
-FoundrIQ's intelligence layer is powered by **five specialized AI agents**, each using IBM Granite for analysis and Tavily for market research.`
+FoundrIQ's intelligence layer is powered by **five specialized AI agents**, each using Perplexity for analysis and Tavily for market research.`
 
 | Agent | Purpose |
 |--------|----------|
@@ -43,38 +43,38 @@ Each agent's output is structured and composable, forming a detailed, investor-r
 
 ## 🤖 AI Model Integration
 
-### 🔷 IBM Granite + Tavily Integration
+### 🔷 Perplexity + Tavily Integration
 
-FoundrIQ leverages **IBM Granite foundation models** for enterprise-grade AI reasoning combined with **Tavily** for real-time market intelligence:
+FoundrIQ leverages **Perplexity AI** for advanced reasoning combined with **Tavily** for real-time market intelligence:
 
 #### 🏗️ Multi-Agent Architecture
 - **5 Specialized AI Agents** working together
-- **IBM Granite models** for business analysis and strategic reasoning
+- **Perplexity AI** for business analysis and strategic reasoning
 - **Tavily search API** for real-time market data and competitor research
 - **Intelligent orchestration** based on task requirements
 
 #### 🚀 Key Capabilities
-- **Enterprise AI reasoning** with IBM Granite foundation models
+- **Advanced AI reasoning** with Perplexity AI
 - **Real-time market intelligence** via Tavily web search
 - **Parallel agent processing** for comprehensive analysis
 - **Structured JSON outputs** for consistent results
 
 ```javascript
-// Example: Market Analysis Agent using IBM Granite + Tavily
-import ibmWatsonxClient from './ibmWatsonxClient.js';
+// Example: Market Analysis Agent using Perplexity + Tavily
+import perplexityClient from './perplexityClient.js';
 import { TavilySearchTool } from './tavily.js';
 
 async function analyzeMarket(ideaDescription) {
   // Gather market data with Tavily
   const tavily = new TavilySearchTool();
   const marketData = await tavily.search(`${ideaDescription} market trends 2024`);
-  
-  // Analyze with IBM Granite
-  const analysis = await ibmWatsonxClient.generateText({
+
+  // Analyze with Perplexity
+  const analysis = await perplexityClient.generateText({
     systemPrompt: "You are an expert market analyst. Provide comprehensive market insights.",
     userPrompt: `Analyze: ${ideaDescription}\n\nMarket Data: ${JSON.stringify(marketData)}`
   }, { temperature: 0.3, maxTokens: 2000 });
-  
+
   return analysis;
 }
 ```
