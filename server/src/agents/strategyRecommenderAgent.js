@@ -3,13 +3,11 @@
  * Generates go-to-market and differentiation strategies using IBM Granite + Tavily
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
-import { TavilySearchTool } from '../retrieval/tavily.js';
+import perplexityClient from '../services/perplexityClient.js';
 
 class StrategyRecommenderAgent {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
-        this.tavilyClient = new TavilySearchTool();
+        this.client = perplexityClient;
     }
 
     /**
@@ -22,11 +20,8 @@ class StrategyRecommenderAgent {
         console.log('[StrategyRecommender] Starting strategy recommendation...');
 
         try {
-            // Gather strategy insights using Tavily
-            const strategyData = await this._gatherStrategyData(ideaData);
-
-            // Generate recommendations using IBM Granite
-            const recommendations = await this._recommendWithGranite(ideaData, analysisData, strategyData);
+            // Generate recommendations using Perplexity (includes search context)
+            const recommendations = await this._recommendWithPerplexity(ideaData, analysisData);
 
             return {
                 goToMarketStrategy: recommendations.goToMarketStrategy || {},
@@ -59,7 +54,7 @@ class StrategyRecommenderAgent {
 
         try {
             const searchQuery = `${ideaData.description} go-to-market strategy pricing marketing channels`;
-            const results = await this.tavilyClient.search(searchQuery, { 
+            const results = await this.tavilyClient.search(searchQuery, {
                 maxResults: 5,
                 agentType: 'strategyRecommender'
             });
@@ -73,6 +68,70 @@ class StrategyRecommenderAgent {
             console.error('[StrategyRecommender] Tavily search error:', error);
             return { enabled: true, error: error.message, results: [] };
         }
+    }
+
+    /**
+     * Generate recommendations using Perplexity
+     * @private
+     */
+    async _recommendWithPerplexity(ideaData, analysisData) {
+        const systemPrompt = `You are an expert startup strategy consultant. Generate comprehensive strategic recommendations for startup ideas.
+
+Provide recommendations in JSON format:
+{
+  "goToMarketStrategy": {
+    "approach": "Description of GTM approach",
+    "targetSegment": "Initial target segment",
+    "launchPlan": "Launch plan overview"
+  },
+  "differentiationStrategy": {
+    "uniqueValueProps": ["UVP 1", "UVP 2"],
+    "competitiveAdvantages": ["Advantage 1", "Advantage 2"],
+    "positioning": "Market positioning statement"
+  },
+  "pricingStrategy": {
+    "model": "Pricing model (subscription, freemium, per-transaction, etc.)",
+    "priceRange": "Estimated price range",
+    "rationale": "Pricing rationale"
+  },
+  "marketingChannels": ["Channel 1", "Channel 2", "Channel 3"],
+  "partnerships": ["Potential partner type 1", "Potential partner type 2"],
+  "milestones": [
+    {"milestone": "Milestone 1", "timeline": "Timeline"},
+    {"milestone": "Milestone 2", "timeline": "Timeline"}
+  ],
+  "nextSteps": ["Step 1", "Step 2", "Step 3"]
+}`;
+
+        let userPrompt = `Startup Idea: ${ideaData.description}\n`;
+        userPrompt += `Category: ${ideaData.category || 'Not specified'}\n`;
+        userPrompt += `Problem Solved: ${ideaData.problemSolved || 'Not specified'}\n`;
+
+        // Include analysis data if available
+        if (analysisData.marketAnalysis) {
+            userPrompt += `\nMarket Size: ${analysisData.marketAnalysis.marketSize || 'Not available'}\n`;
+        }
+        if (analysisData.competition) {
+            userPrompt += `Competition Level: ${analysisData.competition.threatLevel || 'Not available'}\n`;
+        }
+
+        userPrompt += `\nPlease research and provide strategic recommendations based on current market conditions.`;
+
+        const response = await this.client.generateText(
+            { systemPrompt, userPrompt },
+            { temperature: 0.4, maxTokens: 2000 }
+        );
+
+        try {
+            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+        } catch (parseError) {
+            console.warn('[StrategyRecommender] Failed to parse JSON');
+        }
+
+        return { raw: response };
     }
 
     /**

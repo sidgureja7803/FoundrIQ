@@ -40,14 +40,12 @@ const baseRequiredVars = [
   'APPWRITE_DATABASE_ID'
 ];
 
-// IBM Granite is now the primary LLM provider
-const ibmRequiredVars = [
-  'IBM_WATSONX_API_KEY',
-  'IBM_WATSONX_URL',
-  'IBM_WATSONX_PROJECT_ID'
+// Perplexity AI is now the primary LLM provider
+const aiRequiredVars = [
+  'PERPLEXITY_API_KEY'
 ];
 
-const requiredVars = [...baseRequiredVars, ...ibmRequiredVars];
+const requiredVars = [...baseRequiredVars, ...aiRequiredVars];
 
 const missingVars = requiredVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
@@ -77,8 +75,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.get('/health', (req, res) => {
   const requiredServices = {
     appwrite: process.env.APPWRITE_API_KEY && process.env.APPWRITE_PROJECT_ID && process.env.APPWRITE_DATABASE_ID,
-    ibmGranite: process.env.IBM_WATSONX_API_KEY && process.env.IBM_WATSONX_URL && process.env.IBM_WATSONX_PROJECT_ID,
-    tavily: process.env.TAVILY_API_KEY ? true : undefined
+    perplexity: process.env.PERPLEXITY_API_KEY ? true : undefined
   };
 
   const missingServices = Object.entries(requiredServices)
@@ -92,8 +89,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     services: {
       appwrite: requiredServices.appwrite ? 'configured' : 'missing configuration',
-      ibmGranite: requiredServices.ibmGranite ? 'configured' : 'missing configuration',
-      tavily: requiredServices.tavily ? 'configured' : 'not configured',
+      perplexity: requiredServices.perplexity ? 'configured' : 'missing configuration',
       storage: process.env.APPWRITE_REPORTS_BUCKET_ID ? 'configured' : 'not configured'
     },
     missingServices: missingServices.length > 0 ? missingServices : undefined
@@ -131,8 +127,7 @@ server.listen(PORT, () => {
   console.log('\n🚀 FoundrIQ Server Started');
   console.log(`📡 Server: http://localhost:${PORT}`);
   console.log(`💚 Health: http://localhost:${PORT}/health`);
-  console.log(`🤖 AI: IBM Granite (Watsonx)`);
-  console.log(`🔍 Search: ${process.env.TAVILY_API_KEY ? '✓ Tavily' : '✗ Tavily (API key missing)'}`);
+  console.log(`🤖 AI: Perplexity (Sonar Pro)`);
   console.log(`📝 Auth: Appwrite (${process.env.APPWRITE_DATABASE_ID.substring(0, 8)}...)\n`);
 });
 

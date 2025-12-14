@@ -50,7 +50,7 @@ const PrivacyPage: React.FC = () => {
 
             <h2>3. Technology Partners</h2>
             <p>
-              FoundrIQ uses IBM Granite for AI processing, Tavily for market research, and Appwrite for authentication, database, and storage services.
+              FoundrIQ uses Perplexity AI for AI processing and market research, and Appwrite for authentication, database, and storage services.
               Your data is processed according to their respective privacy policies and our data processing agreements with them.
             </p>
 
@@ -70,7 +70,7 @@ const PrivacyPage: React.FC = () => {
             <h2>6. AI Training</h2>
             <p>
               We do not use your business ideas or personal information to train our AI models. Our AI processing is performed
-              using IBM Granite foundation models, and your data is used solely to generate analysis results for you.
+              using Perplexity AI foundation models, and your data is used solely to generate analysis results for you.
             </p>
 
             <h2>7. Data Retention</h2>

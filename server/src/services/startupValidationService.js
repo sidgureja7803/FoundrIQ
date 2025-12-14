@@ -1,18 +1,16 @@
 /**
  * Startup Validation Service
- * Orchestrates IBM Granite + Tavily for comprehensive startup idea validation
+ * Orchestrates Perplexity AI for comprehensive startup idea validation
  * Uses 5 specialized agents: Market Analyst, TAM/SAM, Competitor Scanner, Feasibility, Strategy
  */
 
-import ibmWatsonxClient from './ibmWatsonxClient.js';
-import { TavilySearchTool } from '../retrieval/tavily.js';
+import perplexityClient from '../services/perplexityClient.js';
 import agentOrchestrator from '../agents/agentOrchestrator.js';
 
 class StartupValidationService {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
-        this.tavilyClient = new TavilySearchTool();
-        this.tavilyEnabled = this.tavilyClient.isEnabled();
+        this.client = perplexityClient;
+        this.clientEnabled = !!this.client.apiKey;
     }
 
     /**
@@ -46,8 +44,8 @@ class StartupValidationService {
                 success: true,
                 ...analysisResults,
                 technology: {
-                    ai: 'IBM Granite',
-                    search: 'Tavily',
+                    ai: 'Perplexity',
+                    search: 'Perplexity',
                     database: 'Appwrite'
                 }
             };
@@ -62,8 +60,7 @@ class StartupValidationService {
      */
     getHealth() {
         return {
-            ibmGranite: !this.ibmClient.disabled,
-            tavily: this.tavilyEnabled
+            perplexity: this.clientEnabled
         };
     }
 }

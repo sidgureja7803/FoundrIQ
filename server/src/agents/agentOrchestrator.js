@@ -1,7 +1,7 @@
 /**
  * Agent Orchestrator
  * Coordinates all 5 specialized agents for comprehensive startup analysis
- * using IBM Granite + Tavily
+ * using Perplexity AI
  */
 
 import marketAnalystAgent from './marketAnalystAgent.js';

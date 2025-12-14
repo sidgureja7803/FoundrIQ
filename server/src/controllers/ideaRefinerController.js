@@ -3,7 +3,7 @@
  * Refines raw startup ideas into structured format using AI
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import perplexityClient from '../services/perplexityClient.js';
 
 /**
  * Generate follow-up questions for a startup idea
@@ -21,12 +21,12 @@ const generateQuestions = async (req, res) => {
     }
 
     // Check if IBM Watsonx or Perplexity is available
-    if (ibmWatsonxClient.ibmDisabled && !ibmWatsonxClient.perplexityApiKey) {
+    // Check if Perplexity is available
+    if (!perplexityClient.apiKey) {
       return res.status(503).json({
         error: 'AI service unavailable',
-        message: 'IBM Granite and Perplexity API keys are not configured. Please add IBM_WATSONX_API_KEY or PERPLEXITY_API_KEY to your server environment variables.',
+        message: 'Perplexity API keys are not configured. Please add PERPLEXITY_API_KEY to your server environment variables.',
         details: {
-          ibm_granite: 'Not configured',
           perplexity: 'Not configured'
         }
       });
@@ -57,7 +57,7 @@ Return ONLY valid JSON in this exact format:
 
 Return ONLY the JSON with the questions array.`;
 
-    const response = await ibmWatsonxClient.generateText(
+    const response = await perplexityClient.generateText(
       { systemPrompt, userPrompt },
       {
         temperature: 0.5,
@@ -67,53 +67,53 @@ Return ONLY the JSON with the questions array.`;
 
     let data;
     try {
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            data = JSON.parse(jsonMatch[0]);
-        } else {
-            data = JSON.parse(response);
-        }
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        data = JSON.parse(jsonMatch[0]);
+      } else {
+        data = JSON.parse(response);
+      }
     } catch (e) {
-        console.error("Failed to parse AI response:", e);
-        return res.status(500).json({ 
-          error: 'AI response parsing failed',
-          message: 'The AI returned an invalid format. This typically indicates an API key issue or service degradation. Please verify your IBM Granite or Perplexity API keys are valid.'
-        });
+      console.error("Failed to parse AI response:", e);
+      return res.status(500).json({
+        error: 'AI response parsing failed',
+        message: 'The AI returned an invalid format. This typically indicates an API key issue or service degradation. Please verify your Perplexity API key is valid.'
+      });
     }
 
     if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
-         return res.status(500).json({ 
-           error: 'Invalid AI response',
-           message: 'AI did not generate questions. Please check that your IBM Granite or Perplexity API keys are valid and have sufficient quota.'
-         });
+      return res.status(500).json({
+        error: 'Invalid AI response',
+        message: 'AI did not generate questions. Please check that your Perplexity API key is valid and has sufficient quota.'
+      });
     }
 
     return res.json({ questions: data.questions.slice(0, 5) });
 
   } catch (error) {
     console.error('Error in generateQuestions:', error.message);
-    
+
     // Check for authentication/API key errors
-    if (error.message?.includes('API key') || 
-        error.message?.includes('authentication') ||
-        error.message?.includes('Unauthorized') ||
-        error.message?.includes('401') ||
-        error.message?.includes('403') ||
-        error.message?.includes('IAM token')) {
+    if (error.message?.includes('API key') ||
+      error.message?.includes('authentication') ||
+      error.message?.includes('Unauthorized') ||
+      error.message?.includes('401') ||
+      error.message?.includes('403') ||
+      error.message?.includes('IAM token')) {
       return res.status(503).json({
         error: 'AI authentication failed',
-        message: 'Your IBM Granite or Perplexity API key is invalid or expired. Please check the API keys in your server .env file and ensure they have the correct permissions.'
+        message: 'Your Perplexity API key is invalid or expired. Please check the API keys in your server .env file and ensure they have the correct permissions.'
       });
     }
-    
+
     // Timeout or network errors
     if (error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
       return res.status(503).json({
         error: 'AI service unreachable',
-        message: 'Cannot connect to IBM Granite or Perplexity servers. Please check your network connection and API endpoint configuration.'
+        message: 'Cannot connect to Perplexity servers. Please check your network connection and API endpoint configuration.'
       });
     }
-    
+
     // Generic error
     return res.status(500).json({
       error: 'Question generation failed',
@@ -133,12 +133,12 @@ const refineIdea = async (req, res) => {
     }
 
     // Check if IBM Watsonx or Perplexity is available
-    if (ibmWatsonxClient.ibmDisabled && !ibmWatsonxClient.perplexityApiKey) {
+    // Check if Perplexity is available
+    if (!perplexityClient.apiKey) {
       return res.status(503).json({
         error: 'AI service unavailable',
-        message: 'IBM Watsonx and Perplexity API keys are not configured. Please check your environment variables.',
+        message: 'Perplexity API key is not configured. Please check your environment variables.',
         details: {
-          ibm_granite: 'API key not set',
           perplexity: 'API key not set'
         }
       });
@@ -180,18 +180,18 @@ OUTPUT_JSON:
 }`;
 
     let userPrompt = `RawIdea: """${rawIdea.trim()}"""`;
-    
+
     if (answers && Array.isArray(answers) && answers.length > 0) {
-        userPrompt += `\n\nUser Answers to Follow-up Questions:\n`;
-        answers.forEach((a, i) => {
-            userPrompt += `Q${i+1}: ${a.question}\nA${i+1}: ${a.answer}\n`;
-        });
+      userPrompt += `\n\nUser Answers to Follow-up Questions:\n`;
+      answers.forEach((a, i) => {
+        userPrompt += `Q${i + 1}: ${a.question}\nA${i + 1}: ${a.answer}\n`;
+      });
     }
 
     userPrompt += `\n\nAnalyze the above and return the refined structured JSON.`;
 
-    // Use IBM Granite for idea refinement
-    const response = await ibmWatsonxClient.generateText(
+    // Use Perplexity for idea refinement
+    const response = await perplexityClient.generateText(
       { systemPrompt, userPrompt },
       {
         temperature: 0.3,
@@ -233,7 +233,7 @@ OUTPUT_JSON:
     if (!Array.isArray(refinedData.searchKeywords)) {
       refinedData.searchKeywords = [];
     }
-    
+
     // Validate complexity value
     if (!['low', 'medium', 'high'].includes(refinedData.complexity)) {
       refinedData.complexity = 'medium';
@@ -246,13 +246,13 @@ OUTPUT_JSON:
     console.error('Error refining idea:', error);
 
     // Check if it's an API key error
-    if (error.message?.includes('API key') || 
-        error.message?.includes('authentication') || 
-        error.message?.includes('Unauthorized') ||
-        error.message?.includes('IAM token')) {
+    if (error.message?.includes('API key') ||
+      error.message?.includes('authentication') ||
+      error.message?.includes('Unauthorized') ||
+      error.message?.includes('IAM token')) {
       return res.status(503).json({
         error: 'AI service authentication failed',
-        message: 'Invalid or expired IBM Watsonx/Perplexity API key. Please check your server environment variables and verify the API keys are correct.',
+        message: 'Invalid or expired Perplexity API key. Please check your server environment variables and verify the API keys are correct.',
         details: error.message
       });
     }
@@ -261,7 +261,7 @@ OUTPUT_JSON:
     if (error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
       return res.status(503).json({
         error: 'AI service unavailable',
-        message: 'Cannot connect to IBM Watsonx or Perplexity. Please check your network connection and API endpoints.',
+        message: 'Cannot connect to Perplexity. Please check your network connection and API endpoints.',
         details: error.message
       });
     }

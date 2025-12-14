@@ -50,7 +50,7 @@ const FirstPage: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/10 via-black to-black pointer-events-none"></div>
 
       <div className="container mx-auto px-4 z-10 max-w-5xl">
-        
+
         {/* Main Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +62,7 @@ const FirstPage: React.FC = () => {
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight">
             An AI researcher for your projects
           </h1>
-          
+
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-gray-400 mb-16 max-w-3xl">
             Document well researched ideas with AI
@@ -130,11 +130,11 @@ const FirstPage: React.FC = () => {
           >
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-blue-400" />
-              <span>IBM Granite AI</span>
+              <span>Perplexity AI (Sonar Pro)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-emerald-400">🔍</span>
-              <span>Tavily Search</span>
+              <span>Real-time Search</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-purple-400">⚡</span>

@@ -3,7 +3,7 @@
  * Extracts facts and sources from search keywords using AI
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import perplexityClient from '../services/perplexityClient.js';
 
 const extractEvidence = async (req, res) => {
   try {
@@ -36,8 +36,8 @@ OUTPUT_JSON:
     const userPrompt = `searchKeywords: ${JSON.stringify(limitedKeywords)}
 maxSourcesPerKeyword: ${maxSourcesPerKeyword}`;
 
-    // Use IBM Granite for evidence extraction
-    const response = await ibmWatsonxClient.generateText(
+    // Use Perplexity for evidence extraction
+    const response = await perplexityClient.generateText(
       { systemPrompt, userPrompt },
       {
         temperature: 0.2,

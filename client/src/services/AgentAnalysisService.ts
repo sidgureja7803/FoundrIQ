@@ -52,13 +52,13 @@ class AgentAnalysisService {
     /**
      * Check health status of AI services
      */
-    async checkHealth(): Promise<{ ibmGranite: boolean; tavily: boolean }> {
+    async checkHealth(): Promise<{ perplexity: boolean }> {
         try {
             const response = await axios.get(`${API_URL}/ai/health`);
             return response.data;
         } catch (error) {
             console.error('[AgentAnalysisService] Health check error:', error);
-            return { ibmGranite: false, tavily: false };
+            return { perplexity: false };
         }
     }
 

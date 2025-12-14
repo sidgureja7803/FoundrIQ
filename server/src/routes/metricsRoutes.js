@@ -1,19 +1,19 @@
 /**
- * Metrics Routes - For IBM Granite API usage tracking
+ * Metrics Routes - For AI API usage tracking
  */
 
 import express from 'express';
 const router = express.Router();
 
 /**
- * @route GET /api/metrics/ibm-granite
- * @description Get IBM Granite API usage metrics
+ * @route GET /api/metrics/ai
+ * @description Get AI API usage metrics
  * @access Public
  */
-router.get('/metrics/ibm-granite', (req, res) => {
-  // Simple metrics response for IBM Granite
+router.get('/metrics/ai', (req, res) => {
+  // Simple metrics response for Perplexity
   const metrics = {
-    service: 'IBM Granite (Watson)',
+    service: 'Perplexity AI',
     status: 'operational',
     timestamp: new Date().toISOString()
   };
@@ -24,7 +24,7 @@ router.get('/metrics/ibm-granite', (req, res) => {
       metrics,
       metadata: {
         service: 'FoundrIQ Startup Validation',
-        platform: 'IBM Granite',
+        platform: 'Perplexity',
         timestamp: metrics.timestamp
       }
     }

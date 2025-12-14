@@ -1,6 +1,6 @@
 /**
  * AI Routes
- * Handles AI-powered startup idea validation using IBM Granite + Tavily
+ * Handles AI-powered startup idea validation using Perplexity AI
  */
 import express from "express";
 import startupValidationService from "../services/startupValidationService.js";
@@ -10,7 +10,7 @@ const router = express.Router();
 
 /**
  * POST /api/ai/idea/evaluate
- * Comprehensive startup idea validation using IBM Granite and Tavily
+ * Comprehensive startup idea validation using Perplexity
  * Saves results to Appwrite database if user is authenticated
  * body: { idea: string, userId?: string, title?: string, category?: string }
  */
@@ -69,19 +69,13 @@ router.post("/idea/evaluate", async (req, res) => {
 
 /**
  * GET /api/ai/health
- * Check AI service health (IBM Granite + Tavily)
+ * Check AI service health (Perplexity)
  */
 router.get("/health", async (req, res) => {
-    const health = {
-        ibmGranite: !startupValidationService.ibmClient.disabled,
-        tavily: startupValidationService.tavilyEnabled,
-        timestamp: new Date().toISOString()
-    };
+    const health = startupValidationService.getHealth();
 
-    const allHealthy = health.ibmGranite && health.tavily;
-
-    return res.status(allHealthy ? 200 : 503).json({
-        success: allHealthy,
+    return res.status(health.perplexity ? 200 : 503).json({
+        success: !!health.perplexity,
         services: health
     });
 });

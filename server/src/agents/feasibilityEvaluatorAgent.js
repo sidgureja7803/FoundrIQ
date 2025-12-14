@@ -3,13 +3,11 @@
  * Assesses technical, operational, and financial viability using IBM Granite + Tavily
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
-import { TavilySearchTool } from '../retrieval/tavily.js';
+import perplexityClient from '../services/perplexityClient.js';
 
 class FeasibilityEvaluatorAgent {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
-        this.tavilyClient = new TavilySearchTool();
+        this.client = perplexityClient;
     }
 
     /**
@@ -21,11 +19,8 @@ class FeasibilityEvaluatorAgent {
         console.log('[FeasibilityEvaluator] Starting feasibility evaluation...');
 
         try {
-            // Gather feasibility data using Tavily
-            const feasibilityData = await this._gatherFeasibilityData(ideaData);
-
-            // Evaluate using IBM Granite
-            const evaluation = await this._evaluateWithGranite(ideaData, feasibilityData);
+            // Evaluate using Perplexity (includes search)
+            const evaluation = await this._evaluateWithPerplexity(ideaData);
 
             return {
                 technicalFeasibility: evaluation.technicalFeasibility || {},
@@ -52,35 +47,12 @@ class FeasibilityEvaluatorAgent {
      * Gather feasibility data using Tavily
      * @private
      */
-    async _gatherFeasibilityData(ideaData) {
-        if (!this.tavilyClient.isEnabled()) {
-            return { enabled: false, results: [] };
-        }
-
-        try {
-            const searchQuery = `${ideaData.description} technical requirements costs implementation challenges`;
-            const results = await this.tavilyClient.search(searchQuery, { 
-                maxResults: 5,
-                agentType: 'feasibilityEvaluator'
-            });
-
-            return {
-                enabled: true,
-                results: results || [],
-                query: searchQuery
-            };
-        } catch (error) {
-            console.error('[FeasibilityEvaluator] Tavily search error:', error);
-            return { enabled: true, error: error.message, results: [] };
-        }
-    }
-
     /**
-     * Evaluate feasibility using IBM Granite
+     * Evaluate feasibility using Perplexity
      * @private
      */
-    async _evaluateWithGranite(ideaData, feasibilityData) {
-        const systemPrompt = `You are an expert feasibility analyst. Evaluate the technical, operational, and financial viability of startup ideas.
+    async _evaluateWithPerplexity(ideaData) {
+        const systemPrompt = `You are an expert feasibility analyst. You have access to real-time data. Evaluate the technical, operational, and financial viability of startup ideas.
 
 Provide evaluation in JSON format:
 {
@@ -110,15 +82,9 @@ Provide evaluation in JSON format:
         let userPrompt = `Startup Idea: ${ideaData.description}\n`;
         userPrompt += `Category: ${ideaData.category || 'Not specified'}\n`;
         userPrompt += `Problem Solved: ${ideaData.problemSolved || 'Not specified'}\n`;
+        userPrompt += `\nPlease perform a thorough feasibility study using your research capabilities.`;
 
-        if (feasibilityData.enabled && feasibilityData.results?.length > 0) {
-            userPrompt += `\nFeasibility Research Data:\n`;
-            feasibilityData.results.slice(0, 3).forEach((result, idx) => {
-                userPrompt += `${idx + 1}. ${result.title}: ${result.snippet}\n`;
-            });
-        }
-
-        const response = await this.ibmClient.generateText(
+        const response = await this.client.generateText(
             { systemPrompt, userPrompt },
             { temperature: 0.2, maxTokens: 2000 }
         );

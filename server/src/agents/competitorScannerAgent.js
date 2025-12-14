@@ -3,13 +3,11 @@
  * Maps competitors, emerging players, and market gaps using IBM Granite + Tavily
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
-import { TavilySearchTool } from '../retrieval/tavily.js';
+import perplexityClient from '../services/perplexityClient.js';
 
 class CompetitorScannerAgent {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
-        this.tavilyClient = new TavilySearchTool();
+        this.client = perplexityClient;
     }
 
     /**
@@ -21,11 +19,8 @@ class CompetitorScannerAgent {
         console.log('[CompetitorScanner] Starting competitor scan...');
 
         try {
-            // Gather competitor data using Tavily
-            const competitorData = await this._gatherCompetitorData(ideaData);
-
-            // Analyze competitors using IBM Granite
-            const analysis = await this._analyzeWithGranite(ideaData, competitorData);
+            // Analyze competitors using Perplexity (includes search)
+            const analysis = await this._analyzeWithPerplexity(ideaData);
 
             return {
                 competitors: analysis.competitors || [],
@@ -33,7 +28,7 @@ class CompetitorScannerAgent {
                 marketGaps: analysis.marketGaps || [],
                 competitiveLandscape: analysis.competitiveLandscape || 'Analysis unavailable',
                 threatLevel: analysis.threatLevel || 'medium',
-                sources: competitorData.results || [],
+                sources: [], // Perplexity handles this internally usually
                 scanComplete: true
             };
         } catch (error) {
@@ -58,7 +53,7 @@ class CompetitorScannerAgent {
 
         try {
             const searchQuery = `${ideaData.description} competitors startups companies market players`;
-            const results = await this.tavilyClient.search(searchQuery, { 
+            const results = await this.tavilyClient.search(searchQuery, {
                 maxResults: 8,
                 agentType: 'competitorScanner'
             });
@@ -72,6 +67,51 @@ class CompetitorScannerAgent {
             console.error('[CompetitorScanner] Tavily search error:', error);
             return { enabled: true, error: error.message, results: [] };
         }
+    }
+
+    /**
+     * Analyze competitors using Perplexity
+     * @private
+     */
+    async _analyzeWithPerplexity(ideaData) {
+        const systemPrompt = `You are an expert competitive intelligence analyst. You have access to real-time market data. Analyze the competitive landscape for startup ideas.
+
+Provide analysis in JSON format:
+{
+  "competitors": [
+    {
+      "name": "Competitor name",
+      "description": "What they do",
+      "strengths": ["strength 1", "strength 2"],
+      "weaknesses": ["weakness 1", "weakness 2"],
+      "marketPosition": "Leader/Challenger/Niche"
+    }
+  ],
+  "emergingPlayers": ["Player 1", "Player 2"],
+  "marketGaps": ["Gap 1", "Gap 2", "Gap 3"],
+  "competitiveLandscape": "Overall competitive landscape description",
+  "threatLevel": "low|medium|high"
+}`;
+
+        let userPrompt = `Startup Idea: ${ideaData.description}\n`;
+        userPrompt += `Category: ${ideaData.category || 'Not specified'}\n`;
+        userPrompt += `\nPlease perform a thorough competitor scan using your search capabilities.`;
+
+        const response = await this.client.generateText(
+            { systemPrompt, userPrompt },
+            { temperature: 0.2, maxTokens: 2000 }
+        );
+
+        try {
+            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+        } catch (parseError) {
+            console.warn('[CompetitorScanner] Failed to parse JSON from Perplexity response:', parseError);
+        }
+
+        return { raw: response };
     }
 
     /**

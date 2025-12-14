@@ -42,37 +42,37 @@ class IdeaRefinerService {
    */
   async generateQuestions(rawIdea: string): Promise<string[]> {
     try {
-        const response = await api.post('/refiner/questions', {
-            rawIdea: rawIdea.trim()
-        });
-        return response.data.questions;
+      const response = await api.post('/refiner/questions', {
+        rawIdea: rawIdea.trim()
+      });
+      return response.data.questions;
     } catch (error: any) {
-        console.error('Error generating questions:', error);
-        
-        // Check for specific error types
-        if (error.response?.status === 503) {
-          // Service unavailable - API key issues
-          const errorData = error.response.data;
-          throw new Error(
-            errorData.message || 
-            '⚠️ AI Service Not Available\n\nIBM Granite or Perplexity API keys are not configured or invalid. Please contact the administrator to configure the API keys in the server environment.'
-          );
-        }
-        
-        if (error.response?.status === 500) {
-          // Server error - could be parsing issue or API key problem
-          const errorData = error.response.data;
-          throw new Error(
-            errorData.message ||
-            '⚠️ API Key Error\n\nThe AI service returned an invalid response. This usually means:\n• IBM Granite API key is invalid or expired\n• Perplexity API key is not working\n• The API keys don\'t have sufficient permissions\n\nPlease verify the API keys in your server .env file.'
-          );
-        }
-        
-        if (error.response?.data?.message) {
-          throw new Error(error.response.data.message);
-        }
-        
-        throw new Error('Failed to generate questions. Please check your internet connection and try again.');
+      console.error('Error generating questions:', error);
+
+      // Check for specific error types
+      if (error.response?.status === 503) {
+        // Service unavailable - API key issues
+        const errorData = error.response.data;
+        throw new Error(
+          errorData.message ||
+          '⚠️ AI Service Not Available\n\nPerplexity API keys are not configured or invalid. Please contact the administrator to configure the API keys in the server environment.'
+        );
+      }
+
+      if (error.response?.status === 500) {
+        // Server error - could be parsing issue or API key problem
+        const errorData = error.response.data;
+        throw new Error(
+          errorData.message ||
+          '⚠️ API Key Error\n\nThe AI service returned an invalid response. This usually means:\n• Perplexity API key is not working\n• The API keys don\'t have sufficient permissions\n\nPlease verify the API keys in your server .env file.'
+        );
+      }
+
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+
+      throw new Error('Failed to generate questions. Please check your internet connection and try again.');
     }
   }
 
@@ -89,18 +89,18 @@ class IdeaRefinerService {
       return response.data;
     } catch (error: any) {
       console.error('Error refining idea:', error);
-      
+
       // Handle specific error responses
       if (error.response?.status === 503) {
         // Service unavailable - API key issues
         const errorData = error.response.data;
         throw {
           error: errorData.error || 'AI service unavailable',
-          message: errorData.message || 'IBM Watsonx or Perplexity API keys are not configured. Please check server configuration.',
+          message: errorData.message || 'Perplexity API keys are not configured. Please check server configuration.',
           details: errorData.details
         } as IdeaRefinementError;
       }
-      
+
       // Handle other response errors
       if (error.response?.data) {
         throw {
@@ -110,7 +110,7 @@ class IdeaRefinerService {
           received: error.response.data.received
         } as IdeaRefinementError;
       }
-      
+
       // Network or unknown error
       throw {
         error: 'Network error',
@@ -131,7 +131,7 @@ class IdeaRefinerService {
       return response.data;
     } catch (error: any) {
       console.error('Error refining idea (alt endpoint):', error);
-      
+
       if (error.response?.data) {
         throw {
           error: error.response.data.error || 'Failed to refine idea',
@@ -140,7 +140,7 @@ class IdeaRefinerService {
           received: error.response.data.received
         } as IdeaRefinementError;
       }
-      
+
       throw {
         error: 'Network error',
         message: error.message
@@ -175,7 +175,7 @@ class IdeaRefinerService {
     }
 
     const trimmed = rawIdea.trim();
-    
+
     if (trimmed.length === 0) {
       return { isValid: false, error: 'Idea text cannot be empty' };
     }

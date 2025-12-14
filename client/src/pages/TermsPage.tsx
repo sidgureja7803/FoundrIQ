@@ -43,7 +43,7 @@ const TermsPage: React.FC = () => {
 
             <h2>3. API Usage and Rate Limits</h2>
             <p>
-              Our service utilizes IBM Granite for AI functionality, Tavily for market research, and Appwrite for backend services.
+              Our service utilizes Perplexity AI for AI functionality and market research, and Appwrite for backend services.
               Free tier users are limited to 5 idea analyses per account. Abuse of the API may result in account suspension.
             </p>
 

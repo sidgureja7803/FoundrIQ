@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
                   FoundrIQ
                 </span>
                 <div className="text-xs text-dark-400 font-medium">
-                  Powered by IBM Granite + Tavily
+                  Powered by Perplexity AI
                 </div>
               </div>
             </div>
