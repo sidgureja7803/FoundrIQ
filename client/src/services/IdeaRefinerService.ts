@@ -42,13 +42,14 @@ class IdeaRefinerService {
    */
   async generateQuestions(rawIdea: string): Promise<string[]> {
     try {
-        const response = await api.post('/refiner/questions', {
-            rawIdea: rawIdea.trim()
-        });
-        return response.data.questions;
+      const response = await api.post('/refiner/questions', {
+        rawIdea: rawIdea.trim()
+      });
+      return response.data.questions;
     } catch (error: any) {
-        console.error('Error generating questions:', error);
-        throw new Error('Failed to generate questions');
+      console.error('Error generating questions:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to generate questions';
+      throw new Error(errorMessage);
     }
   }
 
@@ -65,7 +66,7 @@ class IdeaRefinerService {
       return response.data;
     } catch (error: any) {
       console.error('Error refining idea:', error);
-      
+
       // Handle different types of errors
       if (error.response?.data) {
         throw {
@@ -75,7 +76,7 @@ class IdeaRefinerService {
           received: error.response.data.received
         } as IdeaRefinementError;
       }
-      
+
       throw {
         error: 'Network error',
         message: error.message
@@ -95,7 +96,7 @@ class IdeaRefinerService {
       return response.data;
     } catch (error: any) {
       console.error('Error refining idea (alt endpoint):', error);
-      
+
       if (error.response?.data) {
         throw {
           error: error.response.data.error || 'Failed to refine idea',
@@ -104,7 +105,7 @@ class IdeaRefinerService {
           received: error.response.data.received
         } as IdeaRefinementError;
       }
-      
+
       throw {
         error: 'Network error',
         message: error.message
@@ -139,7 +140,7 @@ class IdeaRefinerService {
     }
 
     const trimmed = rawIdea.trim();
-    
+
     if (trimmed.length === 0) {
       return { isValid: false, error: 'Idea text cannot be empty' };
     }

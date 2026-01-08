@@ -27,18 +27,18 @@ const IdeaSubmissionPage: React.FC = () => {
 
   const handleAnalyzeClick = async () => {
     if (!idea.trim()) return;
-    
+
     setStep('loading_questions');
     setLoadingText('Generating follow-up questions...');
     setError(null);
-    
+
     try {
       const qs = await ideaRefinerService.generateQuestions(idea);
       setQuestions(qs);
       setStep('questions');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating questions:", error);
-      setError("Failed to generate questions. Please try again.");
+      setError(error?.message || "Failed to generate questions. Please try again.");
       setStep('input');
     }
   };
@@ -73,10 +73,10 @@ const IdeaSubmissionPage: React.FC = () => {
 
       // Refine Idea
       const refinedResult = await ideaRefinerService.refineIdea(idea, answerList);
-      
+
       setStep('submitting');
       setLoadingText('Creating your idea...');
-      
+
       // Create idea in database
       const ideaData = {
         userId: user.$id,
@@ -86,7 +86,7 @@ const IdeaSubmissionPage: React.FC = () => {
       };
 
       const response = await ideaService.createIdea(user.$id, ideaData, false);
-      
+
       // Navigate to idea details page where analysis will run
       navigate(`/idea/${response.$id}`);
 
@@ -100,10 +100,10 @@ const IdeaSubmissionPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       <Header />
-      
+
       <main className="flex-grow container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto">
-          
+
           <AnimatePresence mode="wait">
             {step === 'input' && (
               <motion.div
@@ -121,13 +121,13 @@ const IdeaSubmissionPage: React.FC = () => {
                     Turn your concept into a comprehensive business plan with AI-powered analysis
                   </p>
                 </div>
-                
+
                 {error && (
                   <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
                     {error}
                   </div>
                 )}
-                
+
                 <div className="w-full bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-2xl backdrop-blur-sm hover:border-gray-700 transition-colors mb-8">
                   <textarea
                     value={idea}
@@ -136,11 +136,11 @@ const IdeaSubmissionPage: React.FC = () => {
                     className="w-full bg-transparent text-lg p-4 text-gray-100 placeholder-gray-600 focus:outline-none min-h-[160px] resize-none"
                   />
                   <div className="flex justify-between items-center px-4 py-2 border-t border-gray-800/50 mt-2">
-                     <span className="text-xs text-gray-500 flex items-center gap-1">
-                       <Sparkles size={12} className="text-emerald-500"/>
-                       Powered by IBM Granite & Tavily
-                     </span>
-                     <button
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <Sparkles size={12} className="text-emerald-500" />
+                      Powered by Perplexity AI, IBM Granite & Tavily
+                    </span>
+                    <button
                       onClick={handleAnalyzeClick}
                       disabled={!idea.trim()}
                       className="bg-white text-black px-6 py-2.5 rounded-xl font-semibold hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95"
@@ -156,7 +156,7 @@ const IdeaSubmissionPage: React.FC = () => {
                     <Sparkles size={20} className="text-gray-400" />
                     <p className="text-sm text-gray-400">Need inspiration? Try one of these:</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {sampleIdeas.map((sampleIdea, index) => (
                       <button
@@ -178,66 +178,66 @@ const IdeaSubmissionPage: React.FC = () => {
             )}
 
             {(step === 'loading_questions' || step === 'refining' || step === 'submitting') && (
-               <motion.div
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center h-64"
-               >
-                  <Loader2 className="w-16 h-16 text-emerald-500 animate-spin mb-6" />
-                  <h2 className="text-2xl font-medium text-gray-200">{loadingText}</h2>
-                  <p className="text-gray-500 mt-2">This usually takes about 10-20 seconds.</p>
-               </motion.div>
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col items-center justify-center h-64"
+              >
+                <Loader2 className="w-16 h-16 text-emerald-500 animate-spin mb-6" />
+                <h2 className="text-2xl font-medium text-gray-200">{loadingText}</h2>
+                <p className="text-gray-500 mt-2">This usually takes about 10-20 seconds.</p>
+              </motion.div>
             )}
 
             {step === 'questions' && (
-               <motion.div
-                  key="questions"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="w-full"
-               >
-                  <h2 className="text-3xl font-bold mb-2 text-center">Just a few details...</h2>
-                  <p className="text-gray-400 text-center mb-8">Help us understand your idea better to give you a precise analysis.</p>
-                  
-                  {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
-                      {error}
+              <motion.div
+                key="questions"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="w-full"
+              >
+                <h2 className="text-3xl font-bold mb-2 text-center">Just a few details...</h2>
+                <p className="text-gray-400 text-center mb-8">Help us understand your idea better to give you a precise analysis.</p>
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
+                    {error}
+                  </div>
+                )}
+
+                <div className="space-y-6">
+                  {questions.map((q, idx) => (
+                    <div key={idx} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                      <label className="block text-lg font-medium text-gray-200 mb-3">{q}</label>
+                      <input
+                        type="text"
+                        value={answers[idx] || ''}
+                        onChange={(e) => handleAnswerChange(idx, e.target.value)}
+                        placeholder="Type your answer..."
+                        className="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-all"
+                      />
                     </div>
-                  )}
+                  ))}
+                </div>
 
-                  <div className="space-y-6">
-                     {questions.map((q, idx) => (
-                        <div key={idx} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                           <label className="block text-lg font-medium text-gray-200 mb-3">{q}</label>
-                           <input
-                              type="text"
-                              value={answers[idx] || ''}
-                              onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                              placeholder="Type your answer..."
-                              className="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-all"
-                           />
-                        </div>
-                     ))}
-                  </div>
-
-                  <div className="mt-8 flex justify-between">
-                     <button
-                        onClick={() => setStep('input')}
-                        className="px-6 py-3 bg-transparent border border-gray-700 text-gray-300 rounded-xl hover:bg-gray-900 transition-all"
-                     >
-                        Back
-                     </button>
-                     <button
-                        onClick={handleSubmitAnswers}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-black text-lg font-bold px-8 py-4 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20"
-                     >
-                        Start Deep Analysis <ArrowRight size={20} />
-                     </button>
-                  </div>
-               </motion.div>
+                <div className="mt-8 flex justify-between">
+                  <button
+                    onClick={() => setStep('input')}
+                    className="px-6 py-3 bg-transparent border border-gray-700 text-gray-300 rounded-xl hover:bg-gray-900 transition-all"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleSubmitAnswers}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-black text-lg font-bold px-8 py-4 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20"
+                  >
+                    Start Deep Analysis <ArrowRight size={20} />
+                  </button>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

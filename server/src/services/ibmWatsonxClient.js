@@ -11,16 +11,16 @@ class IbmWatsonxClient {
     this.ibmUrl = process.env.IBM_WATSONX_URL || 'https://us-south.ml.cloud.ibm.com';
     this.ibmProjectId = process.env.IBM_WATSONX_PROJECT_ID;
     this.modelId = process.env.GRANITE_MODEL_ID || 'ibm/granite-3-3-8b-instruct';
-    
+
     // Perplexity Configuration (Backup)
     this.perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     this.perplexityUrl = 'https://api.perplexity.ai/chat/completions';
-    this.perplexityModel = 'sonar-pro';
-    
+    this.perplexityModel = 'sonar';
+
     // Token caching for IBM
     this.cachedToken = null;
     this.tokenExpiry = 0;
-    
+
     // Check IBM availability (logging handled in index.js)
     this.ibmDisabled = !this.ibmApiKey || !this.ibmProjectId;
   }

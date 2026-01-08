@@ -3,7 +3,7 @@
  * Refines raw startup ideas into structured format using AI
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import aiClient from '../services/aiClient.js';
 
 /**
  * Generate follow-up questions for a startup idea
@@ -20,63 +20,42 @@ const generateQuestions = async (req, res) => {
       });
     }
 
-    const systemPrompt = `You are an expert startup consultant. Your goal is to ask 3 critical follow-up questions to better understand a startup idea.
-    
-INSTRUCTIONS:
-1. Return VALID JSON ONLY. No commentary.
-2. The JSON must contain a "questions" array with exactly 3 strings.
-3. The questions should focus on clarifying the problem, the solution, or the target market.
+    // Check if Perplexity API key is configured
+    if (!perplexityClient.isConfigured()) {
+      console.error('❌ PERPLEXITY_API_KEY is not configured');
+      return res.status(500).json({
+        error: 'Perplexity API key is not configured',
+        message: 'Please add PERPLEXITY_API_KEY to your environment variables'
+      });
+    }
 
-OUTPUT_JSON:
-{
-  "questions": [
-    "Question 1?",
-    "Question 2?",
-    "Question 3?"
-  ]
-}`;
+    console.log('📝 Generating dynamic questions for idea:', rawIdea.substring(0, 50) + '...');
 
-    const userPrompt = `Startup Idea: """${rawIdea.trim()}"""`;
-
-    const response = await ibmWatsonxClient.generateText(
-      { systemPrompt, userPrompt },
-      {
-        temperature: 0.3,
-        maxTokens: 512
-      }
-    );
-
-    let data;
     try {
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            data = JSON.parse(jsonMatch[0]);
-        } else {
-            data = JSON.parse(response);
-        }
-    } catch (e) {
-        console.error("Error parsing questions JSON", e);
-        // Fallback to raw text split if JSON fails
-        return res.json({ questions: ["What problem does this solve?", "Who is your target customer?", "How do you plan to make money?"] });
-    }
+      // Use Perplexity AI to generate idea-specific questions
+      const questions = await perplexityClient.generateFollowUpQuestions(rawIdea);
 
-    if (!data.questions || !Array.isArray(data.questions)) {
-         return res.json({ questions: ["What problem does this solve?", "Who is your target customer?", "How do you plan to make money?"] });
-    }
+      console.log('✅ Successfully generated', questions.length, 'questions using Perplexity AI');
 
-    return res.json({ questions: data.questions.slice(0, 3) });
+      return res.json({ questions });
+
+    } catch (perplexityError) {
+      console.error('❌ Perplexity API error:', perplexityError.message);
+
+      // Return error instead of fallback
+      return res.status(500).json({
+        error: 'Failed to generate questions',
+        message: perplexityError.message
+      });
+    }
 
   } catch (error) {
-    console.error('Error generating questions:', error);
-    console.warn('⚠️  Returning fallback questions due to AI error');
-    
-    // Return fallback questions instead of 500 error
-    return res.json({ 
-      questions: [
-        "What problem does this solve?", 
-        "Who is your target customer?", 
-        "How do you plan to make money?"
-      ]
+    console.error('Error in generateQuestions controller:', error);
+
+    // Return error instead of fallback
+    return res.status(500).json({
+      error: 'Failed to generate questions',
+      message: error.message
     });
   }
 };
@@ -120,12 +99,12 @@ OUTPUT_JSON:
 }`;
 
     let userPrompt = `RawIdea: """${rawIdea.trim()}"""`;
-    
+
     if (answers && Array.isArray(answers) && answers.length > 0) {
-        userPrompt += `\n\nUser Answers to Follow-up Questions:\n`;
-        answers.forEach((a, i) => {
-            userPrompt += `Q: ${a.question}\nA: ${a.answer}\n`;
-        });
+      userPrompt += `\n\nUser Answers to Follow-up Questions:\n`;
+      answers.forEach((a, i) => {
+        userPrompt += `Q: ${a.question}\nA: ${a.answer}\n`;
+      });
     }
 
     // Use IBM Granite for idea refinement
@@ -170,7 +149,7 @@ OUTPUT_JSON:
     if (!Array.isArray(refinedData.searchKeywords)) {
       refinedData.searchKeywords = [];
     }
-    
+
     // Validate complexity value
     if (!['low', 'medium', 'high'].includes(refinedData.complexity)) {
       refinedData.complexity = 'medium';
