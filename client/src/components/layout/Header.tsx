@@ -92,7 +92,7 @@ const Header: React.FC = () => {
                 FoundrIQ
               </span>
               <span className="text-xs text-dark-400 font-medium">
-                Powered by IBM Granite
+                Powered by Perplexity AI
               </span>
             </div>
           </Link>
@@ -103,8 +103,8 @@ const Header: React.FC = () => {
               <Link
                 to="/"
                 className={`${isActive('/')
-                    ? 'text-primary-400'
-                    : 'text-dark-300 hover:text-white'
+                  ? 'text-primary-400'
+                  : 'text-dark-300 hover:text-white'
                   } transition-colors duration-200 font-medium`}
               >
                 Home
@@ -113,8 +113,8 @@ const Header: React.FC = () => {
             <Link
               to="/gallery"
               className={`${isActive('/gallery')
-                  ? 'text-primary-400'
-                  : 'text-dark-300 hover:text-white'
+                ? 'text-primary-400'
+                : 'text-dark-300 hover:text-white'
                 } transition-colors duration-200 font-medium`}
             >
               Public Gallery

@@ -1,93 +1,92 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Server, Code, Cpu, Database } from 'lucide-react';
+import { Shield, Zap, Server, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const IBMGraniteAppwriteSection: React.FC = () => {
+const PerplexityAppwriteSection: React.FC = () => {
   const technologies = [
     {
-      name: 'IBM Granite',
-      logo: 'https://www.ibm.com/brand/experience-guides/developer/b1db1ae501d522a1a4b49613fe07c9f1/01_8-bar-positive.svg',
-      description: 'Enterprise-ready foundation models powered by IBM Watson.',
-      details: 'Advanced AI reasoning with IBM Granite models designed for business applications.',
+      name: 'Perplexity AI',
+      logo: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/perplexity-ai-icon.png',
+      description: 'Advanced AI reasoning with state-of-the-art language models.',
+      details: 'Real-time web search and deep research capabilities powered by cutting-edge AI technology.'
     },
     {
       name: 'Appwrite',
       logo: 'https://appwrite.io/images/logos/appwrite.svg',
-      description: 'Secure, scalable backend infrastructure with Appwrite.',
-      details: 'Authentication, database, and storage managed by Appwrite Cloud.',
+      description: 'Secure, scalable backend infrastructure.',
+      details: 'Authentication, database, and storage managed by Appwrite Cloud for enterprise-grade reliability.'
     },
   ];
 
   const features = [
     {
-      icon: <Zap size={24} className="text-accent-purple" />,
-      title: 'IBM Granite AI',
-      description: 'Enterprise-grade AI models deliver accurate startup insights.',
+      icon: <Zap size={24} />,
+      title: 'Perplexity AI',
+      description: 'Advanced AI models deliver accurate startup insights with real-time data.'
     },
     {
-      icon: <Shield size={24} className="text-accent-cyan" />,
+      icon: <Shield size={24} />,
       title: 'Enterprise Security',
-      description: 'Appwrite provides secure authentication and data management.',
+      description: 'Appwrite provides secure authentication and data management.'
     },
     {
-      icon: <Server size={24} className="text-accent-emerald" />,
+      icon: <Server size={24} />,
       title: 'Tavily Search',
-      description: 'Real-time market intelligence powered by advanced web search.',
+      description: 'Real-time market intelligence powered by advanced web search.'
     },
     {
-      icon: <Code size={24} className="text-accent-orange" />,
+      icon: <Code size={24} />,
       title: 'Open Architecture',
-      description: 'API-first design lets you integrate with existing systems.',
+      description: 'API-first design lets you integrate with existing systems.'
     },
   ];
 
   return (
-    <section className="py-20 relative w-full max-w-[100vw] overflow-x-hidden">
-      <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <section className="py-24 relative w-full overflow-hidden bg-black">
+      <div className="container mx-auto px-6 max-w-6xl">
         <div className="text-center mb-16">
-          <motion.h2
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 px-2"
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            Powered by Industry-Leading Technology
-          </motion.h2>
+            <h2 className="font-display text-5xl md:text-6xl font-black mb-6 text-white">
+              Powered by Leading AI Technology
+            </h2>
+          </motion.div>
+
           <motion.p
-            className="text-base sm:text-lg text-dark-400 max-w-2xl mx-auto px-2"
+            className="font-body text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            We've partnered with IBM and Appwrite to deliver the most powerful
-            startup validation platform available.
+            We've partnered with Perplexity AI and Appwrite to deliver the most powerful startup validation platform available.
           </motion.p>
         </div>
 
         {/* Core Technologies */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {technologies.map((tech, index) => (
             <motion.div
               key={tech.name}
-              className="bg-dark-900/50 backdrop-blur-sm border border-dark-800 rounded-xl p-6 sm:p-8 hover:shadow-lg hover:shadow-primary-500/10 transition-all"
+              className="p-8 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-200"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: index * 0.2 }}
             >
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-dark-800/50 rounded-xl flex items-center justify-center min-w-[80px]">
-                  <img src={tech.logo} alt={tech.name} className="h-12 w-auto" />
+                <div className="flex-shrink-0 p-4 rounded-lg bg-white/10 flex items-center justify-center min-w-[80px] h-20">
+                  <img src={tech.logo} alt={tech.name} className="h-12 w-auto object-contain" />
                 </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2">{tech.name}</h3>
-                  <p className="text-dark-300 mb-3 text-sm sm:text-base">{tech.description}</p>
-                  <p className="text-dark-500 text-xs sm:text-sm">{tech.details}</p>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black mb-3 text-white">{tech.name}</h3>
+                  <p className="text-gray-400 mb-2 leading-relaxed">{tech.description}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{tech.details}</p>
                 </div>
               </div>
             </motion.div>
@@ -95,27 +94,29 @@ const IBMGraniteAppwriteSection: React.FC = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              className="bg-dark-900/30 border border-dark-800 rounded-xl p-6"
+              className="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-200"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="mb-4">
-                {feature.icon}
+              <div className="space-y-3">
+                <div className="text-white">
+                  {feature.icon}
+                </div>
+                <h4 className="text-lg font-bold text-white">{feature.title}</h4>
+                <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
               </div>
-              <h4 className="text-lg font-semibold mb-2">{feature.title}</h4>
-              <p className="text-dark-400 text-sm">{feature.description}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Legal Links */}
-        <div className="mt-16 text-center">
+        <div className="text-center">
           <motion.div
             className="mb-8"
             initial={{ opacity: 0, y: 20 }}
@@ -123,22 +124,24 @@ const IBMGraniteAppwriteSection: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Legal & Privacy</h3>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/privacy" className="text-primary-400 hover:text-primary-300 underline text-sm">
+            <h3 className="text-xl font-bold mb-6 text-white">Legal & Privacy</h3>
+            <div className="flex flex-wrap justify-center gap-6">
+              <Link to="/privacy" className="text-gray-400 hover:text-white font-medium transition-colors">
                 Privacy Policy
               </Link>
-              <Link to="/terms" className="text-primary-400 hover:text-primary-300 underline text-sm">
+              <span className="text-gray-700">•</span>
+              <Link to="/terms" className="text-gray-400 hover:text-white font-medium transition-colors">
                 Terms of Service
               </Link>
-              <Link to="/terms" className="text-primary-400 hover:text-primary-300 underline text-sm">
+              <span className="text-gray-700">•</span>
+              <Link to="/terms" className="text-gray-400 hover:text-white font-medium transition-colors">
                 Cookie Policy
               </Link>
             </div>
           </motion.div>
 
-          <p className="text-dark-500 text-xs max-w-xl mx-auto">
-            By using FoundrIQ, you agree to our Terms of Service and Privacy Policy. We use IBM Granite and Appwrite
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto leading-relaxed">
+            By using FoundrIQ, you agree to our Terms of Service and Privacy Policy. We use Perplexity AI and Appwrite
             technologies to provide our services. All data is processed according to our data processing guidelines.
           </p>
         </div>
@@ -147,4 +150,4 @@ const IBMGraniteAppwriteSection: React.FC = () => {
   );
 };
 
-export default IBMGraniteAppwriteSection;
+export default PerplexityAppwriteSection;

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import FirstPage from '../LandingPage/FirstPage.tsx';
 import Functionality from '../LandingPage/Functionality.tsx';
 import Agents from '../LandingPage/Agents.tsx';
-import IBMGraniteAppwriteSection from '../LandingPage/IBMGraniteAppwriteSection.tsx';
+import PerplexityAppwriteSection from '../LandingPage/IBMGraniteAppwriteSection.tsx';
 import SimpleHeader from '../components/layout/SimpleHeader';
 import Footer from '../components/layout/Footer';
 
@@ -21,7 +21,7 @@ const LandingPage: React.FC = () => {
         <FirstPage />
         <Functionality />
         <Agents />
-        <IBMGraniteAppwriteSection />
+        <PerplexityAppwriteSection />
       </motion.main>
 
       <Footer />
