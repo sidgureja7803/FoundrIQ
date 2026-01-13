@@ -21,7 +21,7 @@ const generateQuestions = async (req, res) => {
     }
 
     // Check if Perplexity API key is configured
-    if (!perplexityClient.isConfigured()) {
+    if (!aiClient.isConfigured()) {
       console.error('❌ PERPLEXITY_API_KEY is not configured');
       return res.status(500).json({
         error: 'Perplexity API key is not configured',
@@ -33,19 +33,19 @@ const generateQuestions = async (req, res) => {
 
     try {
       // Use Perplexity AI to generate idea-specific questions
-      const questions = await perplexityClient.generateFollowUpQuestions(rawIdea);
+      const questions = await aiClient.generateFollowUpQuestions(rawIdea);
 
       console.log('✅ Successfully generated', questions.length, 'questions using Perplexity AI');
 
       return res.json({ questions });
 
-    } catch (perplexityError) {
-      console.error('❌ Perplexity API error:', perplexityError.message);
+    } catch (aiError) {
+      console.error('❌ Perplexity API error:', aiError.message);
 
       // Return error instead of fallback
       return res.status(500).json({
         error: 'Failed to generate questions',
-        message: perplexityError.message
+        message: aiError.message
       });
     }
 
@@ -107,8 +107,8 @@ OUTPUT_JSON:
       });
     }
 
-    // Use IBM Granite for idea refinement
-    const response = await ibmWatsonxClient.generateText(
+    // Use Perplexity AI for idea refinement
+    const response = await aiClient.generateText(
       { systemPrompt, userPrompt },
       {
         temperature: 0.3,

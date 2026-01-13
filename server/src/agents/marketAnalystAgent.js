@@ -1,14 +1,14 @@
 /**
  * Market Analyst Agent
- * Identifies market size, growth trends, and target audiences using IBM Granite + Tavily
+ * Identifies market size, growth trends, and target audiences using Perplexity AI + Tavily
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import aiClient from '../services/aiClient.js';
 import { TavilySearchTool } from '../retrieval/tavily.js';
 
 class MarketAnalystAgent {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
+        this.aiClient = aiClient;
         this.tavilyClient = new TavilySearchTool();
     }
 
@@ -24,8 +24,8 @@ class MarketAnalystAgent {
             // Step 1: Gather market intelligence using Tavily
             const marketData = await this._gatherMarketData(ideaData);
 
-            // Step 2: Analyze with IBM Granite
-            const analysis = await this._analyzeWithGranite(ideaData, marketData);
+            // Step 2: Analyze with Perplexity AI
+            const analysis = await this._analyzeWithAI(ideaData, marketData);
 
             return {
                 marketSize: analysis.marketSize || 'Analysis unavailable',
@@ -59,7 +59,7 @@ class MarketAnalystAgent {
 
         try {
             const searchQuery = `${ideaData.description} market size growth trends 2024`;
-            const results = await this.tavilyClient.search(searchQuery, { 
+            const results = await this.tavilyClient.search(searchQuery, {
                 maxResults: 5,
                 agentType: 'marketAnalyst'
             });
@@ -76,10 +76,10 @@ class MarketAnalystAgent {
     }
 
     /**
-     * Analyze market data using IBM Granite
+     * Analyze market data using Perplexity AI
      * @private
      */
-    async _analyzeWithGranite(ideaData, marketData) {
+    async _analyzeWithAI(ideaData, marketData) {
         const systemPrompt = `You are an expert market analyst. Analyze the startup idea and provide comprehensive market analysis.
 
 Provide analysis in JSON format with the following structure:
@@ -105,7 +105,7 @@ Provide analysis in JSON format with the following structure:
             });
         }
 
-        const response = await this.ibmClient.generateText(
+        const response = await this.aiClient.generateText(
             { systemPrompt, userPrompt },
             { temperature: 0.3, maxTokens: 1500 }
         );

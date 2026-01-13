@@ -3,12 +3,12 @@
  * Maps competitors, emerging players, and market gaps using IBM Granite + Tavily
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import aiClient from '../services/aiClient.js';
 import { TavilySearchTool } from '../retrieval/tavily.js';
 
 class CompetitorScannerAgent {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
+        this.ibmClient = aiClient;
         this.tavilyClient = new TavilySearchTool();
     }
 

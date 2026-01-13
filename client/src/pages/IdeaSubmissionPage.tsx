@@ -183,11 +183,87 @@ const IdeaSubmissionPage: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center h-64"
+                className="flex flex-col items-center justify-center min-h-[400px] py-12"
               >
-                <Loader2 className="w-16 h-16 text-emerald-500 animate-spin mb-6" />
-                <h2 className="text-2xl font-medium text-gray-200">{loadingText}</h2>
-                <p className="text-gray-500 mt-2">This usually takes about 10-20 seconds.</p>
+                {/* Animated Icon */}
+                <div className="relative mb-8">
+                  <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse"></div>
+                  <Loader2 className="relative w-20 h-20 text-emerald-500 animate-spin" />
+                </div>
+
+                {/* Current Step Title */}
+                <h2 className="text-3xl font-bold text-gray-100 mb-3">{loadingText}</h2>
+
+                {/* Step Description */}
+                <p className="text-gray-400 text-lg mb-8 max-w-md text-center">
+                  {step === 'loading_questions' && 'Our AI is analyzing your idea to generate personalized questions...'}
+                  {step === 'refining' && 'Processing your answers to create a detailed business analysis...'}
+                  {step === 'submitting' && 'Saving your idea and preparing the analysis dashboard...'}
+                </p>
+
+                {/* Progress Steps */}
+                <div className="w-full max-w-md space-y-3">
+                  {/* Step 1 */}
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className={`flex items-center gap-3 p-3 rounded-lg ${step === 'loading_questions'
+                        ? 'bg-emerald-500/10 border border-emerald-500/30'
+                        : 'bg-gray-800/30 border border-gray-700/30'
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${step === 'loading_questions' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                      }`}></div>
+                    <span className={`text-sm ${step === 'loading_questions' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                      }`}>
+                      1. Generating Questions (Perplexity AI)
+                    </span>
+                  </motion.div>
+
+                  {/* Step 2 */}
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className={`flex items-center gap-3 p-3 rounded-lg ${step === 'refining'
+                        ? 'bg-emerald-500/10 border border-emerald-500/30'
+                        : 'bg-gray-800/30 border border-gray-700/30'
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${step === 'refining' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                      }`}></div>
+                    <span className={`text-sm ${step === 'refining' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                      }`}>
+                      2. Refining Idea (Perplexity AI)
+                    </span>
+                  </motion.div>
+
+                  {/* Step 3 */}
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className={`flex items-center gap-3 p-3 rounded-lg ${step === 'submitting'
+                        ? 'bg-emerald-500/10 border border-emerald-500/30'
+                        : 'bg-gray-800/30 border border-gray-700/30'
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${step === 'submitting' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                      }`}></div>
+                    <span className={`text-sm ${step === 'submitting' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                      }`}>
+                      3. Creating Analysis Dashboard
+                    </span>
+                  </motion.div>
+                </div>
+
+                {/* Helpful Tip */}
+                <div className="mt-8 text-center">
+                  <p className="text-xs text-gray-500">
+                    💡 Powered by Perplexity's Sonar AI Model
+                  </p>
+                </div>
               </motion.div>
             )}
 

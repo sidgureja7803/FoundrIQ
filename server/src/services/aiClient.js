@@ -2,7 +2,11 @@
  * AI Client - Perplexity API Only
  * Unified client for all AI operations using Perplexity's Sonar model
  */
+import dotenv from 'dotenv';
 import fetch from 'node-fetch';
+
+// Load environment variables
+dotenv.config();
 
 class AIClient {
     constructor() {
@@ -13,6 +17,9 @@ class AIClient {
 
         if (!this.perplexityApiKey) {
             console.warn('⚠️  PERPLEXITY_API_KEY is not set in environment variables');
+            console.warn('⚠️  Please add PERPLEXITY_API_KEY to your .env file');
+        } else {
+            console.log('✅ Perplexity AI Client initialized successfully');
         }
     }
 

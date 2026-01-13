@@ -4,13 +4,13 @@
  * Uses 5 specialized agents: Market Analyst, TAM/SAM, Competitor Scanner, Feasibility, Strategy
  */
 
-import ibmWatsonxClient from './ibmWatsonxClient.js';
+import aiClient from './aiClient.js';
 import { TavilySearchTool } from '../retrieval/tavily.js';
 import agentOrchestrator from '../agents/agentOrchestrator.js';
 
 class StartupValidationService {
     constructor() {
-        this.ibmClient = ibmWatsonxClient;
+        this.ibmClient = aiClient;
         this.tavilyClient = new TavilySearchTool();
         this.tavilyEnabled = this.tavilyClient.isEnabled();
     }

@@ -3,7 +3,7 @@
  * Extracts facts and sources from search keywords using AI
  */
 
-import ibmWatsonxClient from '../services/ibmWatsonxClient.js';
+import aiClient from '../services/aiClient.js';
 
 const extractEvidence = async (req, res) => {
   try {
@@ -37,7 +37,7 @@ OUTPUT_JSON:
 maxSourcesPerKeyword: ${maxSourcesPerKeyword}`;
 
     // Use IBM Granite for evidence extraction
-    const response = await ibmWatsonxClient.generateText(
+    const response = await aiClient.generateText(
       { systemPrompt, userPrompt },
       {
         temperature: 0.2,
