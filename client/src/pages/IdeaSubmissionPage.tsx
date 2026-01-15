@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Loader2, Sparkles, Lightbulb } from 'lucide-react';
-import { ideaRefinerService, QuestionAnswer } from '../services/IdeaRefinerService';
+import { ideaRefinerService } from '../services/IdeaRefinerService';
 import { ideaService } from '../services/appwrite';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/layout/Header';
@@ -14,7 +14,7 @@ const IdeaSubmissionPage: React.FC = () => {
   const [idea, setIdea] = useState('');
   const [step, setStep] = useState<'input' | 'loading_questions' | 'questions' | 'refining' | 'submitting'>('input');
   const [questions, setQuestions] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [combinedAnswer, setCombinedAnswer] = useState('');
   const [loadingText, setLoadingText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -43,10 +43,6 @@ const IdeaSubmissionPage: React.FC = () => {
     }
   };
 
-  const handleAnswerChange = (index: number, value: string) => {
-    setAnswers(prev => ({ ...prev, [index]: value }));
-  };
-
   const handleSubmitAnswers = async () => {
     if (!user) {
       navigate('/sign-in');
@@ -66,9 +62,10 @@ const IdeaSubmissionPage: React.FC = () => {
         return;
       }
 
-      const answerList: QuestionAnswer[] = questions.map((q, i) => ({
+      // Create structured answers from combined text
+      const answerList = questions.map((q, i) => ({
         question: q,
-        answer: answers[i] || ''
+        answer: combinedAnswer // Use the same combined answer for all - the AI will parse it
       }));
 
       // Refine Idea
@@ -114,10 +111,10 @@ const IdeaSubmissionPage: React.FC = () => {
                 className="flex flex-col"
               >
                 <div className="text-center mb-12">
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                    Validate your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Startup Idea</span>
+                  <h1 className="font-display text-5xl md:text-6xl font-black mb-4 text-white">
+                    Validate your Startup Idea
                   </h1>
-                  <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                  <p className="font-body text-xl text-gray-500 max-w-2xl mx-auto">
                     Turn your concept into a comprehensive business plan with AI-powered analysis
                   </p>
                 </div>
@@ -128,22 +125,22 @@ const IdeaSubmissionPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="w-full bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-2xl backdrop-blur-sm hover:border-gray-700 transition-colors mb-8">
+                <div className="w-full bg-white/5 border border-white/10 rounded-lg p-2 hover:border-white/20 transition-colors mb-8">
                   <textarea
                     value={idea}
                     onChange={(e) => setIdea(e.target.value)}
                     placeholder="Describe your startup idea in a few sentences..."
-                    className="w-full bg-transparent text-lg p-4 text-gray-100 placeholder-gray-600 focus:outline-none min-h-[160px] resize-none"
+                    className="w-full bg-transparent text-lg p-4 text-white placeholder-gray-600 focus:outline-none min-h-[160px] resize-none"
                   />
-                  <div className="flex justify-between items-center px-4 py-2 border-t border-gray-800/50 mt-2">
+                  <div className="flex justify-between items-center px-4 py-2 border-t border-white/10 mt-2">
                     <span className="text-xs text-gray-500 flex items-center gap-1">
-                      <Sparkles size={12} className="text-emerald-500" />
-                      Powered by Perplexity AI, IBM Granite & Tavily
+                      <Sparkles size={12} className="text-gray-400" />
+                      Powered by Perplexity AI
                     </span>
                     <button
                       onClick={handleAnalyzeClick}
                       disabled={!idea.trim()}
-                      className="bg-white text-black px-6 py-2.5 rounded-xl font-semibold hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95"
+                      className="bg-white text-black px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
                     >
                       Analyze <ArrowRight size={16} />
                     </button>
@@ -162,11 +159,11 @@ const IdeaSubmissionPage: React.FC = () => {
                       <button
                         key={index}
                         onClick={() => setIdea(sampleIdea)}
-                        className="text-left p-4 bg-gray-900/30 border border-gray-800 rounded-xl hover:bg-gray-900/50 hover:border-gray-700 transition-all group"
+                        className="text-left p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 transition-all group"
                       >
                         <div className="flex items-start gap-2">
                           <Lightbulb size={16} className="text-gray-500 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                          <p className="text-sm text-gray-400 group-hover:text-white transition-colors">
                             {sampleIdea}
                           </p>
                         </div>
@@ -185,80 +182,72 @@ const IdeaSubmissionPage: React.FC = () => {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center min-h-[400px] py-12"
               >
-                {/* Animated Icon */}
                 <div className="relative mb-8">
-                  <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse"></div>
-                  <Loader2 className="relative w-20 h-20 text-emerald-500 animate-spin" />
+                  <div className="absolute inset-0 bg-white/20 blur-xl rounded-full"></div>
+                  <Loader2 className="relative w-20 h-20 text-white animate-spin" />
                 </div>
 
-                {/* Current Step Title */}
-                <h2 className="text-3xl font-bold text-gray-100 mb-3">{loadingText}</h2>
+                <h2 className="text-3xl font-bold text-white mb-3">{loadingText}</h2>
 
-                {/* Step Description */}
                 <p className="text-gray-400 text-lg mb-8 max-w-md text-center">
                   {step === 'loading_questions' && 'Our AI is analyzing your idea to generate personalized questions...'}
                   {step === 'refining' && 'Processing your answers to create a detailed business analysis...'}
                   {step === 'submitting' && 'Saving your idea and preparing the analysis dashboard...'}
                 </p>
 
-                {/* Progress Steps */}
                 <div className="w-full max-w-md space-y-3">
-                  {/* Step 1 */}
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
                     className={`flex items-center gap-3 p-3 rounded-lg ${step === 'loading_questions'
-                        ? 'bg-emerald-500/10 border border-emerald-500/30'
-                        : 'bg-gray-800/30 border border-gray-700/30'
+                      ? 'bg-white/10 border border-white/20'
+                      : 'bg-white/5 border border-white/10'
                       }`}
                   >
-                    <div className={`w-2 h-2 rounded-full ${step === 'loading_questions' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                    <div className={`w-2 h-2 rounded-full ${step === 'loading_questions' ? 'bg-white' : 'bg-gray-600'
                       }`}></div>
-                    <span className={`text-sm ${step === 'loading_questions' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                    <span className={`text-sm ${step === 'loading_questions' ? 'text-white font-medium' : 'text-gray-500'
                       }`}>
                       1. Generating Questions (Perplexity AI)
                     </span>
                   </motion.div>
 
-                  {/* Step 2 */}
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                     className={`flex items-center gap-3 p-3 rounded-lg ${step === 'refining'
-                        ? 'bg-emerald-500/10 border border-emerald-500/30'
-                        : 'bg-gray-800/30 border border-gray-700/30'
+                      ? 'bg-white/10 border border-white/20'
+                      : 'bg-white/5 border border-white/10'
                       }`}
                   >
-                    <div className={`w-2 h-2 rounded-full ${step === 'refining' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                    <div className={`w-2 h-2 rounded-full ${step === 'refining' ? 'bg-white' : 'bg-gray-600'
                       }`}></div>
-                    <span className={`text-sm ${step === 'refining' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                    <span className={`text-sm ${step === 'refining' ? 'text-white font-medium' : 'text-gray-500'
                       }`}>
                       2. Refining Idea (Perplexity AI)
                     </span>
                   </motion.div>
 
-                  {/* Step 3 */}
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
                     className={`flex items-center gap-3 p-3 rounded-lg ${step === 'submitting'
-                        ? 'bg-emerald-500/10 border border-emerald-500/30'
-                        : 'bg-gray-800/30 border border-gray-700/30'
+                      ? 'bg-white/10 border border-white/20'
+                      : 'bg-white/5 border border-white/10'
                       }`}
                   >
-                    <div className={`w-2 h-2 rounded-full ${step === 'submitting' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'
+                    <div className={`w-2 h-2 rounded-full ${step === 'submitting' ? 'bg-white' : 'bg-gray-600'
                       }`}></div>
-                    <span className={`text-sm ${step === 'submitting' ? 'text-emerald-400 font-medium' : 'text-gray-500'
+                    <span className={`text-sm ${step === 'submitting' ? 'text-white font-medium' : 'text-gray-500'
                       }`}>
                       3. Creating Analysis Dashboard
                     </span>
                   </motion.div>
                 </div>
 
-                {/* Helpful Tip */}
                 <div className="mt-8 text-center">
                   <p className="text-xs text-gray-500">
                     💡 Powered by Perplexity's Sonar AI Model
@@ -275,8 +264,8 @@ const IdeaSubmissionPage: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 className="w-full"
               >
-                <h2 className="text-3xl font-bold mb-2 text-center">Just a few details...</h2>
-                <p className="text-gray-400 text-center mb-8">Help us understand your idea better to give you a precise analysis.</p>
+                <h2 className="font-display text-4xl font-black mb-2 text-center text-white">Just a few details...</h2>
+                <p className="font-body text-gray-500 text-center mb-8">Help us understand your idea better to give you a precise analysis.</p>
 
                 {error && (
                   <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
@@ -284,31 +273,41 @@ const IdeaSubmissionPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="space-y-6">
-                  {questions.map((q, idx) => (
-                    <div key={idx} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                      <label className="block text-lg font-medium text-gray-200 mb-3">{q}</label>
-                      <input
-                        type="text"
-                        value={answers[idx] || ''}
-                        onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                        placeholder="Type your answer..."
-                        className="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-all"
-                      />
-                    </div>
-                  ))}
+                {/* Display questions */}
+                <div className="bg-white/5 border border-white/10 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Questions to consider:</h3>
+                  <ul className="space-y-2">
+                    {questions.map((q, idx) => (
+                      <li key={idx} className="flex gap-2 text-gray-300">
+                        <span className="text-gray-500">{idx + 1}.</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Single combined answer textarea */}
+                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                  <label className="block text-lg font-bold text-white mb-3">Your answers:</label>
+                  <textarea
+                    value={combinedAnswer}
+                    onChange={(e) => setCombinedAnswer(e.target.value)}
+                    placeholder="Answer all questions here. Our AI will understand your combined response..."
+                    className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:border-white/20 focus:outline-none transition-all min-h-[180px] resize-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">💡 Just write naturally - you don't need to separate your answers</p>
                 </div>
 
                 <div className="mt-8 flex justify-between">
                   <button
                     onClick={() => setStep('input')}
-                    className="px-6 py-3 bg-transparent border border-gray-700 text-gray-300 rounded-xl hover:bg-gray-900 transition-all"
+                    className="px-6 py-3 bg-transparent border border-white/20 text-gray-300 rounded-lg hover:bg-white/10 transition-all"
                   >
                     Back
                   </button>
                   <button
                     onClick={handleSubmitAnswers}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-black text-lg font-bold px-8 py-4 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20"
+                    className="bg-white hover:bg-gray-200 text-black text-lg font-bold px-8 py-4 rounded-lg transition-all flex items-center gap-2"
                   >
                     Start Deep Analysis <ArrowRight size={20} />
                   </button>

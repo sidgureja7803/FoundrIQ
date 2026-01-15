@@ -125,19 +125,20 @@ class AIClient {
     /**
      * Generate follow-up questions for a startup idea
      * @param {string} startupIdea - The startup idea to generate questions for
-     * @returns {Promise<string[]>} Array of 3 follow-up questions
+     * @returns {Promise<string[]>} Array of 3 crisp follow-up questions
      */
     async generateFollowUpQuestions(startupIdea) {
         const messages = [
             {
                 role: 'system',
-                content: `You are an expert startup consultant. Your job is to ask 3 critical, insightful follow-up questions to better understand a startup idea.
+                content: `You are a startup consultant. Generate 3 CRISP, TO-THE-POINT questions to understand the startup idea better.
 
-IMPORTANT RULES:
-1. Questions must be SPECIFIC to the startup idea provided
-2. Questions should help clarify the problem, solution, target market, or business model
-3. Avoid generic questions - make them relevant to THIS specific idea
-4. Return ONLY valid JSON in this exact format:
+RULES:
+1. Questions must be SHORT (max 10-12 words each)
+2. Questions must be SPECIFIC to this idea
+3. Focus on: target customers, key problem, or unique solution
+4. NO generic questions
+5. Return ONLY valid JSON:
 {
   "questions": [
     "Question 1?",
@@ -146,18 +147,18 @@ IMPORTANT RULES:
   ]
 }
 
-Do not include any other text, explanation, or markdown formatting.`
+No markdown, no commentary.`
             },
             {
                 role: 'user',
                 content: `Startup Idea: """${startupIdea.trim()}"""
 
-Generate 3 specific follow-up questions for this idea.`
+Generate 3 crisp questions.`
             }
         ];
 
         try {
-            const response = await this.callPerplexity(messages, { maxTokens: 512 });
+            const response = await this.callPerplexity(messages, { maxTokens: 400 });
 
             // Parse JSON response
             let data;
@@ -181,6 +182,44 @@ Generate 3 specific follow-up questions for this idea.`
 
         } catch (error) {
             console.error('Error generating follow-up questions:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Generate a crisp startup idea summary
+     * @param {string} rawIdea - The raw startup idea
+     * @param {string} answers - Combined answers from the user
+     * @returns {Promise<string>} A crisp 2-3 sentence startup idea summary
+     */
+    async generateStartupSummary(rawIdea, answers) {
+        const messages = [
+            {
+                role: 'system',
+                content: `You are a startup expert. Generate a CRISP, TO-THE-POINT startup idea summary (2-3 sentences max).
+
+Focus on:
+- What problem it solves
+- Who it's for
+- What makes it unique
+
+BE CONCISE. NO fluff.`
+            },
+            {
+                role: 'user',
+                content: `Raw Idea: """${rawIdea.trim()}"""
+
+User provided context: """${answers}"""
+
+Generate a crisp 2-3 sentence startup idea summary.`
+            }
+        ];
+
+        try {
+            const response = await this.callPerplexity(messages, { maxTokens: 200 });
+            return response.trim();
+        } catch (error) {
+            console.error('Error generating startup summary:', error);
             throw error;
         }
     }

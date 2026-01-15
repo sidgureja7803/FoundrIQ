@@ -72,6 +72,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
    // Create a dummy socket object to prevent errors
    const dummySocket = {
      on: () => {},
+     off: () => {},
      emit: () => {},
      disconnect: () => {},
      id: 'dummy-socket'

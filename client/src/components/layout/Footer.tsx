@@ -1,112 +1,85 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Lightbulb, Github, Twitter, Linkedin, Cpu, Zap, Globe, Mail } from 'lucide-react';
+import { Brain, Github, Twitter, Linkedin, Globe, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
     <motion.footer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-dark-900/50 border-t border-white/10 mt-auto backdrop-blur-sm"
+      className="bg-black border-t border-white/10 mt-auto"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo & Description */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-primary-500 to-accent-cyan p-2.5">
-                  <Brain className="h-7 w-7 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r from-accent-orange to-accent-purple p-1">
-                  <Lightbulb className="h-4 w-4 text-white" />
-                </div>
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-white/10 p-2">
+                <Brain className="h-full w-full text-white" />
               </div>
               <div>
-                <span className="text-2xl font-black gradient-text">
-                  FoundrIQ
-                </span>
-                <div className="text-xs text-dark-400 font-medium">
-                  Powered by IBM Granite + Tavily
+                <span className="text-xl font-black text-white">FoundrIQ</span>
+                <div className="text-xs text-gray-500 font-medium">
+                  Powered by Perplexity AI + Tavily
                 </div>
               </div>
             </div>
-            <p className="text-dark-300 mb-6 max-w-md leading-relaxed">
+            <p className="text-gray-500 mb-6 leading-relaxed text-sm">
               Transform your startup ideas into comprehensive, data-driven market analyses with AI-powered insights.
               Validate faster, launch smarter.
             </p>
 
-            {/* Tech Stack */}
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="flex items-center space-x-2 px-3 py-1 rounded-full glass-effect">
-                <Cpu className="h-4 w-4 text-accent-cyan" />
-                <span className="text-xs font-medium text-white">IBM Granite</span>
-              </div>
-              <div className="flex items-center space-x-2 px-3 py-1 rounded-full glass-effect">
-                <Brain className="h-4 w-4 text-accent-purple" />
-                <span className="text-xs font-medium text-white">Llama 3</span>
-              </div>
-              <div className="flex items-center space-x-2 px-3 py-1 rounded-full glass-effect">
-                <Zap className="h-4 w-4 text-accent-emerald" />
-                <span className="text-xs font-medium text-white">Multi-Agent AI</span>
-              </div>
-            </div>
-
             {/* Social Links */}
-            <div className="flex space-x-4">
+            <div className="flex gap-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-lg glass-effect flex items-center justify-center text-dark-400 hover:text-primary-400 transition-colors duration-200 group"
+                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
                 aria-label="Twitter"
               >
-                <Twitter className="h-5 w-5 group-hover:animate-pulse" />
+                <Twitter className="h-4 w-4" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-lg glass-effect flex items-center justify-center text-dark-400 hover:text-primary-400 transition-colors duration-200 group"
+                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="h-5 w-5 group-hover:animate-pulse" />
+                <Linkedin className="h-4 w-4" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-lg glass-effect flex items-center justify-center text-dark-400 hover:text-primary-400 transition-colors duration-200 group"
+                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
                 aria-label="GitHub"
               >
-                <Github className="h-5 w-5 group-hover:animate-pulse" />
+                <Github className="h-4 w-4" />
               </a>
             </div>
           </div>
 
           {/* Platform Links */}
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-6 flex items-center">
-              <Globe className="h-4 w-4 mr-2 text-primary-400" />
+            <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
+              <Globe className="h-4 w-4" />
               Platform
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               <li>
-                <a href="/" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-primary-400 mr-3 group-hover:animate-pulse"></span>
+                <a href="/" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Home
                 </a>
               </li>
               <li>
-                <a href="/validate-idea" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-primary-400 mr-3 group-hover:animate-pulse"></span>
+                <a href="/validate-idea" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Validate Idea
                 </a>
               </li>
               <li>
-                <a href="/my-ideas" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-primary-400 mr-3 group-hover:animate-pulse"></span>
+                <a href="/my-ideas" className="text-gray-400 hover:text-white transition-colors text-sm">
                   My Ideas
                 </a>
               </li>
               <li>
-                <a href="/hackathon-demo" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-accent-purple mr-3 group-hover:animate-pulse"></span>
-                  Live Demo
+                <a href="/gallery" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Public Gallery
                 </a>
               </li>
             </ul>
@@ -114,33 +87,29 @@ const Footer: React.FC = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-6 flex items-center">
-              <Mail className="h-4 w-4 mr-2 text-accent-cyan" />
+            <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
+              <Mail className="h-4 w-4" />
               Resources
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               <li>
-                <a href="#" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-accent-cyan mr-3 group-hover:animate-pulse"></span>
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-accent-cyan mr-3 group-hover:animate-pulse"></span>
-                  API Reference
-                </a>
-              </li>
-              <li>
-                <a href="/terms" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-accent-cyan mr-3 group-hover:animate-pulse"></span>
+                <a href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Terms of Service
                 </a>
               </li>
               <li>
-                <a href="/privacy" className="text-dark-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1 h-1 rounded-full bg-accent-cyan mr-3 group-hover:animate-pulse"></span>
+                <a href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  API Reference
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Documentation
                 </a>
               </li>
             </ul>
@@ -148,15 +117,15 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-dark-400 text-sm">
+        <div className="mt-12 pt-6 border-t border-white/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-sm">
               © 2025 FoundrIQ. All rights reserved. Built with ❤️ for entrepreneurs.
             </p>
-            <div className="flex items-center space-x-6 text-sm text-dark-400">
-              <span className="flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></div>
-                <span>System Operational</span>
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <span className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                System Operational
               </span>
               <span>v1.0.0</span>
             </div>

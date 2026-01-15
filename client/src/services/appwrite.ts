@@ -196,6 +196,24 @@ export const ideaService = {
     }
   },
 
+
+  // Get a single idea by ID
+  getIdea: async (ideaId: string) => {
+    try {
+      return await databases.getDocument(
+        DATABASE_ID,
+        COLLECTIONS.IDEAS,
+        ideaId
+      );
+    } catch (error: any) {
+      console.error('Error getting idea:', error);
+      if (error.code === 404) {
+        console.error('❌ Idea not found:', ideaId);
+      }
+      throw error;
+    }
+  },
+
   // Get public ideas for gallery
   getPublicIdeas: async () => {
     try {
