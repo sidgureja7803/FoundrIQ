@@ -251,6 +251,26 @@ export const ideaService = {
     }
   },
 
+  // Update idea with analysis results
+  updateIdeaWithAnalysis: async (ideaId: string, analysisResults: any, status: string = 'completed') => {
+    try {
+      return await databases.updateDocument(
+        DATABASE_ID,
+        COLLECTIONS.IDEAS,
+        ideaId,
+        {
+          status,
+          analysisResults: JSON.stringify(analysisResults),
+          analyzedAt: new Date().toISOString()
+        }
+      );
+    } catch (error) {
+      console.error('Error updating idea with analysis:', error);
+      throw error;
+    }
+  },
+
+
   // Delete an idea
   deleteIdea: async (ideaId: string) => {
     try {
