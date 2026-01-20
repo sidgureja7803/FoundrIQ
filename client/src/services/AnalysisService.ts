@@ -63,6 +63,30 @@ class AnalysisService {
     }
 
     /**
+     * Helper method to extract error message from API response
+     * Prioritizes userMessage for Tavily errors
+     */
+    private extractErrorMessage(error: any, defaultMessage: string): { message: string; isTavilyError: boolean; code?: string } {
+        const responseData = error.response?.data;
+
+        // Check if this is a Tavily API error
+        if (responseData?.code === 'TAVILY_API_KEY_INVALID' ||
+            responseData?.code === 'TAVILY_RATE_LIMIT' ||
+            responseData?.code === 'TAVILY_SEARCH_FAILED') {
+            return {
+                message: responseData.userMessage || responseData.message || defaultMessage,
+                isTavilyError: true,
+                code: responseData.code
+            };
+        }
+
+        return {
+            message: responseData?.userMessage || responseData?.message || responseData?.error || defaultMessage,
+            isTavilyError: false
+        };
+    }
+
+    /**
      * Run Market Analyst agent only
      */
     async runMarketAnalyst(request: AnalysisRequest): Promise<AgentResult> {
@@ -81,7 +105,8 @@ class AnalysisService {
             return response.data;
         } catch (error: any) {
             console.error('[AnalysisService] ❌ Market Analyst failed:', error);
-            throw new Error(error.response?.data?.message || 'Market analysis failed');
+            const errorInfo = this.extractErrorMessage(error, 'Market analysis failed');
+            throw new Error(errorInfo.message);
         }
     }
 
@@ -102,7 +127,8 @@ class AnalysisService {
             return response.data;
         } catch (error: any) {
             console.error('[AnalysisService] ❌ TAM/SAM Estimator failed:', error);
-            throw new Error(error.response?.data?.message || 'TAM/SAM estimation failed');
+            const errorInfo = this.extractErrorMessage(error, 'TAM/SAM estimation failed');
+            throw new Error(errorInfo.message);
         }
     }
 
@@ -123,7 +149,8 @@ class AnalysisService {
             return response.data;
         } catch (error: any) {
             console.error('[AnalysisService] ❌ Competitor Scanner failed:', error);
-            throw new Error(error.response?.data?.message || 'Competitor analysis failed');
+            const errorInfo = this.extractErrorMessage(error, 'Competitor analysis failed');
+            throw new Error(errorInfo.message);
         }
     }
 
@@ -144,7 +171,8 @@ class AnalysisService {
             return response.data;
         } catch (error: any) {
             console.error('[AnalysisService] ❌ Feasibility Evaluator failed:', error);
-            throw new Error(error.response?.data?.message || 'Feasibility evaluation failed');
+            const errorInfo = this.extractErrorMessage(error, 'Feasibility evaluation failed');
+            throw new Error(errorInfo.message);
         }
     }
 
@@ -166,7 +194,8 @@ class AnalysisService {
             return response.data;
         } catch (error: any) {
             console.error('[AnalysisService] ❌ Strategy Recommender failed:', error);
-            throw new Error(error.response?.data?.message || 'Strategy recommendation failed');
+            const errorInfo = this.extractErrorMessage(error, 'Strategy recommendation failed');
+            throw new Error(errorInfo.message);
         }
     }
 

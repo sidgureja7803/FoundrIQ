@@ -70,6 +70,12 @@ class CompetitorScannerAgent {
             };
         } catch (error) {
             console.error('[CompetitorScanner] Tavily search error:', error);
+            
+            // If it's a Tavily API key error, propagate it
+            if (error.code === 'TAVILY_API_KEY_INVALID' || error.name === 'TavilyAPIKeyError') {
+                throw error;
+            }
+            
             return { enabled: true, error: error.message, results: [] };
         }
     }

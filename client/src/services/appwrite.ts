@@ -27,7 +27,7 @@ if (appwriteProjectId) {
   client
     .setEndpoint(appwriteEndpoint)
     .setProject(appwriteProjectId);
-  
+
   console.log('✅ Appwrite client initialized successfully');
 } else {
   console.error('❌ Cannot initialize Appwrite client - missing Project ID');
@@ -254,7 +254,11 @@ export const ideaService = {
   // Update idea with analysis results
   updateIdeaWithAnalysis: async (ideaId: string, analysisResults: any, status: string = 'completed') => {
     try {
-      return await databases.updateDocument(
+      console.log('[Appwrite] Updating idea with analysis results');
+      console.log('[Appwrite] Idea ID:', ideaId);
+      console.log('[Appwrite] Analysis data size:', JSON.stringify(analysisResults).length, 'characters');
+
+      const result = await databases.updateDocument(
         DATABASE_ID,
         COLLECTIONS.IDEAS,
         ideaId,
@@ -264,8 +268,12 @@ export const ideaService = {
           analyzedAt: new Date().toISOString()
         }
       );
-    } catch (error) {
-      console.error('Error updating idea with analysis:', error);
+
+      console.log('[Appwrite] ✅ Update successful, doc ID:', result.$id);
+      return result;
+    } catch (error: any) {
+      console.error('[Appwrite] ❌ Error updating idea:', error);
+      console.error('[Appwrite] Error message:', error.message);
       throw error;
     }
   },

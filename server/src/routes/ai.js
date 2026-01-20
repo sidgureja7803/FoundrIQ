@@ -12,7 +12,56 @@ import competitorScannerAgent from "../agents/competitorScannerAgent.js";
 import feasibilityEvaluatorAgent from "../agents/feasibilityEvaluatorAgent.js";
 import strategyRecommenderAgent from "../agents/strategyRecommenderAgent.js";
 
+
 const router = express.Router();
+
+/**
+ * Helper function to handle Tavily API errors
+ * @param {Error} err - The error object
+ * @param {Response} res - Express response object
+ * @param {string} agentName - Name of the agent for error message
+ * @returns {Response} Express response with appropriate error
+ */
+function handleTavilyError(err, res, agentName = 'Analysis') {
+    // Check for Tavily API key errors
+    if (err.code === 'TAVILY_API_KEY_INVALID' || err.name === 'TavilyAPIKeyError') {
+        return res.status(503).json({
+            success: false,
+            error: "Tavily API Configuration Error",
+            message: err.message,
+            userMessage: "⚠️ Tavily API key is invalid or missing. Please check your TAVILY_API_KEY environment variable and restart the server.",
+            code: "TAVILY_API_KEY_INVALID",
+            agent: agentName
+        });
+    }
+
+    // Check for Tavily rate limit errors
+    if (err.code === 'TAVILY_RATE_LIMIT' || err.name === 'TavilyRateLimitError') {
+        return res.status(429).json({
+            success: false,
+            error: "Rate Limit Exceeded",
+            message: err.message,
+            userMessage: "Too many requests to the market research API. Please try again in a few moments.",
+            code: "TAVILY_RATE_LIMIT",
+            agent: agentName
+        });
+    }
+
+    // Check for other Tavily errors
+    if (err.code === 'TAVILY_SEARCH_FAILED' || err.name === 'TavilySearchError') {
+        return res.status(503).json({
+            success: false,
+            error: "Market Research API Error",
+            message: err.message,
+            userMessage: "The market research service (Tavily) encountered an error. Please try again later.",
+            code: "TAVILY_SEARCH_FAILED",
+            agent: agentName
+        });
+    }
+
+    return null; // Not a Tavily error
+}
+
 
 /**
  * POST /api/ai/idea/evaluate
@@ -106,6 +155,12 @@ router.post("/agent/market-analyst", async (req, res) => {
         });
     } catch (err) {
         console.error("[AI Route] Market Analyst error:", err);
+
+        // Try to handle as Tavily error
+        const tavilyErrorResponse = handleTavilyError(err, res, 'Market Analyst');
+        if (tavilyErrorResponse) return tavilyErrorResponse;
+
+        // Generic error
         return res.status(500).json({
             success: false,
             error: "Market analysis failed",
@@ -146,6 +201,10 @@ router.post("/agent/tam-sam-estimator", async (req, res) => {
         });
     } catch (err) {
         console.error("[AI Route] TAM/SAM Estimator error:", err);
+
+        const tavilyErrorResponse = handleTavilyError(err, res, 'TAM/SAM Estimator');
+        if (tavilyErrorResponse) return tavilyErrorResponse;
+
         return res.status(500).json({
             success: false,
             error: "TAM/SAM estimation failed",
@@ -186,6 +245,10 @@ router.post("/agent/competitor-scanner", async (req, res) => {
         });
     } catch (err) {
         console.error("[AI Route] Competitor Scanner error:", err);
+
+        const tavilyErrorResponse = handleTavilyError(err, res, 'Competitor Scanner');
+        if (tavilyErrorResponse) return tavilyErrorResponse;
+
         return res.status(500).json({
             success: false,
             error: "Competitor analysis failed",
@@ -226,6 +289,10 @@ router.post("/agent/feasibility-evaluator", async (req, res) => {
         });
     } catch (err) {
         console.error("[AI Route] Feasibility Evaluator error:", err);
+
+        const tavilyErrorResponse = handleTavilyError(err, res, 'Feasibility Evaluator');
+        if (tavilyErrorResponse) return tavilyErrorResponse;
+
         return res.status(500).json({
             success: false,
             error: "Feasibility evaluation failed",
@@ -267,6 +334,10 @@ router.post("/agent/strategy-recommender", async (req, res) => {
         });
     } catch (err) {
         console.error("[AI Route] Strategy Recommender error:", err);
+
+        const tavilyErrorResponse = handleTavilyError(err, res, 'Strategy Recommender');
+        if (tavilyErrorResponse) return tavilyErrorResponse;
+
         return res.status(500).json({
             success: false,
             error: "Strategy recommendation failed",

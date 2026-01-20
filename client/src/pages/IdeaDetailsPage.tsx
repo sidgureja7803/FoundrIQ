@@ -66,13 +66,29 @@ const IdeaDetailsPage: React.FC = () => {
         console.log('📥 Fetching idea:', ideaId);
         const fetchedIdea = await ideaService.getIdea(ideaId);
 
+        console.log('📦 Fetched idea data:', {
+          id: fetchedIdea.$id,
+          title: fetchedIdea.title,
+          status: fetchedIdea.status,
+          hasAnalysisResults: !!fetchedIdea.analysisResults,
+          analysisResultsType: typeof fetchedIdea.analysisResults,
+          analyzedAt: fetchedIdea.analyzedAt
+        });
+
         // Parse analysisResults if it's a string
         let parsedAnalysisResults = fetchedIdea.analysisResults;
-        if (typeof fetchedIdea.analysisResults === 'string') {
-          try {
-            parsedAnalysisResults = JSON.parse(fetchedIdea.analysisResults);
-          } catch (parseError) {
-            console.error('Failed to parse analysis results:', parseError);
+        if (fetchedIdea.analysisResults) {
+          if (typeof fetchedIdea.analysisResults === 'string') {
+            try {
+              parsedAnalysisResults = JSON.parse(fetchedIdea.analysisResults);
+              console.log('✅ Parsed analysis results from string');
+            } catch (parseError) {
+              console.error('❌ Failed to parse analysis results:', parseError);
+              console.error('Raw data:', fetchedIdea.analysisResults);
+              parsedAnalysisResults = null;
+            }
+          } else {
+            console.log('✅ Analysis results already an object');
           }
         }
 
@@ -92,11 +108,27 @@ const IdeaDetailsPage: React.FC = () => {
         setIdea(ideaData);
         setIsLoading(false);
 
-        // Trigger analysis if no results exist and haven't triggered yet
-        if (!ideaData.analysisResults && !hasTriggeredAnalysis.current) {
+        // Check if we need to run analysis
+        const hasValidAnalysis = parsedAnalysisResults &&
+          typeof parsedAnalysisResults === 'object' &&
+          parsedAnalysisResults.agents &&
+          Object.keys(parsedAnalysisResults.agents).length > 0;
+
+        console.log('🔍 Analysis check:', {
+          hasValidAnalysis,
+          hasTriggered: hasTriggeredAnalysis.current,
+          status: ideaData.status
+        });
+
+        // Trigger analysis if no valid results exist and haven't triggered yet
+        if (!hasValidAnalysis && !hasTriggeredAnalysis.current) {
+          console.log('🚀 No valid analysis found - triggering new analysis');
           hasTriggeredAnalysis.current = true;
           await triggerSequentialAnalysis(ideaData);
+        } else if (hasValidAnalysis) {
+          console.log('✅ Found existing analysis - skipping re-analysis');
         }
+
 
       } catch (err: any) {
         console.error('❌ Failed to fetch idea:', err);
@@ -165,10 +197,24 @@ const IdeaDetailsPage: React.FC = () => {
       // Save analysis results to Appwrite
       try {
         console.log('💾 Saving analysis results to database...');
-        await ideaService.updateIdeaWithAnalysis(ideaData.$id, finalResults, 'completed');
-        console.log('✅ Analysis saved to database');
-      } catch (saveError) {
+        console.log('🔑 Idea ID:', ideaData.$id);
+        console.log('📊 Results structure:', {
+          hasAgents: !!finalResults.agents,
+          agentKeys: finalResults.agents ? Object.keys(finalResults.agents) : [],
+          overallScore: finalResults.overallScore,
+          status: finalResults.status
+        });
+
+        const savedDoc = await ideaService.updateIdeaWithAnalysis(ideaData.$id, finalResults, 'completed');
+        console.log('✅ Analysis saved to database successfully');
+        console.log('📝 Saved document ID:', savedDoc.$id);
+      } catch (saveError: any) {
         console.error('⚠️ Failed to save analysis to database:', saveError);
+        console.error('Error details:', {
+          message: saveError.message,
+          code: saveError.code,
+          type: saveError.type
+        });
         // Continue even if save fails - user can still see results
       }
 
@@ -338,14 +384,14 @@ const IdeaDetailsPage: React.FC = () => {
                     <div
                       key={agent.id}
                       className={`flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-white/10 border border-white/20' :
-                          isCompleted ? 'bg-green-500/10 border border-green-500/20' :
-                            'bg-white/5 border border-white/10'
+                        isCompleted ? 'bg-green-500/10 border border-green-500/20' :
+                          'bg-white/5 border border-white/10'
                         }`}
                     >
                       <span className="text-2xl">{agent.icon}</span>
                       <span className={`text-sm flex-1 ${isActive ? 'text-white font-medium' :
-                          isCompleted ? 'text-green-400' :
-                            'text-gray-400'
+                        isCompleted ? 'text-green-400' :
+                          'text-gray-400'
                         }`}>
                         {agent.name}
                       </span>
@@ -408,7 +454,7 @@ const IdeaDetailsPage: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                       >
-                        <CompetitionSection />
+                        <CompetitionSection data={progressiveResults.competitorAnalysis} />
                       </motion.div>
                     )}
 
@@ -417,7 +463,7 @@ const IdeaDetailsPage: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                       >
-                        <FeasibilitySection />
+                        <FeasibilitySection data={progressiveResults.feasibilityEvaluation} />
                       </motion.div>
                     )}
 
@@ -426,7 +472,7 @@ const IdeaDetailsPage: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                       >
-                        <StrategySection />
+                        <StrategySection data={progressiveResults.strategyRecommendation} />
                       </motion.div>
                     )}
                   </div>
@@ -554,15 +600,15 @@ const IdeaDetailsPage: React.FC = () => {
               )}
 
               {activeSection === 'competition' && (
-                <CompetitionSection />
+                <CompetitionSection data={parsedAnalysis.agents?.competitorAnalysis} />
               )}
 
               {activeSection === 'feasibility' && (
-                <FeasibilitySection />
+                <FeasibilitySection data={parsedAnalysis.agents?.feasibilityEvaluation} />
               )}
 
               {activeSection === 'strategy' && (
-                <StrategySection />
+                <StrategySection data={parsedAnalysis.agents?.strategyRecommendation} />
               )}
             </div>
           </div>

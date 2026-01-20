@@ -113,9 +113,28 @@ export class TavilySearchTool extends SearchTool {
     } catch (error) {
       console.error('[Tavily] Search error:', error.message);
 
-      // Don't throw - return empty results to allow pipeline to continue
-      console.warn('[Tavily] Returning empty results due to error');
-      return [];
+      // Check if it's an API key issue
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized') || error.message?.includes('API key')) {
+        const apiKeyError = new Error('Tavily API key is invalid or missing. Please check your TAVILY_API_KEY environment variable.');
+        apiKeyError.name = 'TavilyAPIKeyError';
+        apiKeyError.code = 'TAVILY_API_KEY_INVALID';
+        throw apiKeyError;
+      }
+
+      // Check for rate limiting
+      if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+        const rateLimitError = new Error('Tavily API rate limit exceeded. Please try again in a few moments.');
+        rateLimitError.name = 'TavilyRateLimitError';
+        rateLimitError.code = 'TAVILY_RATE_LIMIT';
+        throw rateLimitError;
+      }
+
+      // For other errors, throw a generic Tavily error
+      const tavilyError = new Error(`Tavily search failed: ${error.message}`);
+      tavilyError.name = 'TavilySearchError';
+      tavilyError.code = 'TAVILY_SEARCH_FAILED';
+      tavilyError.originalError = error;
+      throw tavilyError;
     }
   }
 
