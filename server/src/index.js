@@ -56,7 +56,7 @@ if (missingVars.length > 0) {
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Initialize socket.io
 socketManager.initialize(server);

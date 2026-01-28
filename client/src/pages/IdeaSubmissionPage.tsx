@@ -12,9 +12,10 @@ const IdeaSubmissionPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [idea, setIdea] = useState('');
-  const [step, setStep] = useState<'input' | 'loading_questions' | 'questions' | 'refining' | 'submitting'>('input');
+  const [step, setStep] = useState<'input' | 'loading_questions' | 'questions' | 'refining' | 'refined_prompt' | 'submitting'>('input');
   const [questions, setQuestions] = useState<string[]>([]);
   const [combinedAnswer, setCombinedAnswer] = useState('');
+  const [refinedPrompt, setRefinedPrompt] = useState('');
   const [loadingText, setLoadingText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -71,14 +72,36 @@ const IdeaSubmissionPage: React.FC = () => {
       // Refine Idea
       const refinedResult = await ideaRefinerService.refineIdea(idea, answerList);
 
-      setStep('submitting');
-      setLoadingText('Creating your idea...');
+      // Generate refined prompt text
+      const promptText = `${refinedResult.refinedIdea.title || 'Untitled Idea'}\n\n${refinedResult.refinedIdea.problem}\n\n${refinedResult.refinedIdea.solution}`;
+      setRefinedPrompt(promptText);
 
-      // Create idea in database
+      // Move to refined prompt display step
+      setStep('refined_prompt');
+
+    } catch (error: any) {
+      console.error("Error in process:", error);
+      setError(error?.message || "Failed to process your idea. Please try again.");
+      setStep('questions');
+    }
+  };
+
+  const handleStartAnalysis = async () => {
+    if (!user) {
+      navigate('/sign-in');
+      return;
+    }
+
+    setStep('submitting');
+    setLoadingText('Creating your idea...');
+    setError(null);
+
+    try {
+      // Create idea in database with refined prompt
       const ideaData = {
         userId: user.$id,
-        title: refinedResult.refinedIdea.title || 'Untitled Idea',
-        description: `${refinedResult.refinedIdea.problem}\n\n${refinedResult.refinedIdea.solution}`,
+        title: refinedPrompt.split('\n\n')[0] || 'Untitled Idea',
+        description: refinedPrompt,
         isPublic: false
       };
 
@@ -88,9 +111,9 @@ const IdeaSubmissionPage: React.FC = () => {
       navigate(`/idea/${response.$id}`);
 
     } catch (error: any) {
-      console.error("Error in process:", error);
-      setError(error?.message || "Failed to process your idea. Please try again.");
-      setStep('questions');
+      console.error("Error creating idea:", error);
+      setError(error?.message || "Failed to create your idea. Please try again.");
+      setStep('refined_prompt');
     }
   };
 
@@ -191,7 +214,7 @@ const IdeaSubmissionPage: React.FC = () => {
 
                 <p className="text-gray-400 text-lg mb-8 max-w-md text-center">
                   {step === 'loading_questions' && 'Our AI is analyzing your idea to generate personalized questions...'}
-                  {step === 'refining' && 'Processing your answers to create a detailed business analysis...'}
+                  {step === 'refining' && 'Processing your answers to create a detailed refined prompt...'}
                   {step === 'submitting' && 'Saving your idea and preparing the analysis dashboard...'}
                 </p>
 
@@ -307,9 +330,57 @@ const IdeaSubmissionPage: React.FC = () => {
                   </button>
                   <button
                     onClick={handleSubmitAnswers}
-                    className="bg-white hover:bg-gray-200 text-black text-lg font-bold px-8 py-4 rounded-lg transition-all flex items-center gap-2"
+                    disabled={!combinedAnswer.trim()}
+                    className="bg-white hover:bg-gray-200 text-black text-lg font-bold px-8 py-4 rounded-lg transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Start Deep Analysis <ArrowRight size={20} />
+                    Refine Idea <ArrowRight size={20} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 'refined_prompt' && (
+              <motion.div
+                key="refined_prompt"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="w-full"
+              >
+                <h2 className="font-display text-4xl font-black mb-2 text-center text-white">✨ Your Refined Idea</h2>
+                <p className="font-body text-gray-500 text-center mb-8">Review the refined version of your startup idea below</p>
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">
+                    {error}
+                  </div>
+                )}
+
+                {/* Refined Prompt Display */}
+                <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-xl p-8 mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles size={20} className="text-yellow-400" />
+                    <h3 className="text-lg font-bold text-white">AI-Refined Startup Concept</h3>
+                  </div>
+                  <div className="bg-black/30 border border-white/10 rounded-lg p-6">
+                    <p className="text-white leading-relaxed whitespace-pre-wrap">{refinedPrompt}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex justify-between">
+                  <button
+                    onClick={() => setStep('questions')}
+                    className="px-6 py-3 bg-transparent border border-white/20 text-gray-300 rounded-lg hover:bg-white/10 transition-all"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleStartAnalysis}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-lg font-bold px-10 py-4 rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-green-500/25"
+                  >
+                    <Sparkles size={20} />
+                    Start Deep Analysis
+                    <ArrowRight size={20} />
                   </button>
                 </div>
               </motion.div>
